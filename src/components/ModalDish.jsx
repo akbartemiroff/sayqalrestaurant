@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { IoMdClose } from 'react-icons/io';
 import { getLocalizedWeight } from '../data/menu';
+import { getImagePath, PLACEHOLDER_IMAGE } from '../utils/paths';
 
 const ModalDish = ({ isOpen, onClose, dish }) => {
   const { language } = useLanguage();
@@ -81,12 +82,12 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
               </div>
               
               {/* Основное изображение блюда */}
-              <img loading="lazy" src={dish?.image || dish?.images || '/bukhara/images/background/uzbek-pattern.jpg'}
+              <img loading="lazy" src={getImagePath(dish?.image || dish?.images) || PLACEHOLDER_IMAGE}
                 alt={getName()}
                 className="w-full h-72 sm:h-96 object-cover"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = '/bukhara/images/background/uzbek-pattern.jpg';
+                  e.target.src = PLACEHOLDER_IMAGE;
                 }}
               />
               

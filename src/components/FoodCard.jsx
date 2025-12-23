@@ -3,9 +3,7 @@ import { motion } from 'framer-motion';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { getLocalizedWeight } from '../data/menu';
 import { isImageCached, preloadImage } from '../utils/imagePreloader';
-
-// Константы для оптимизации
-const PLACEHOLDER_IMAGE = '/bukhara/images/background/uzbek-pattern.jpg';
+import { getImagePath, PLACEHOLDER_IMAGE } from '../utils/paths';
 
 // Минимизированные варианты анимации для лучшей производительности
 const CARD_VARIANTS = {
@@ -52,7 +50,7 @@ const FoodCard = React.memo(({ item, onClick }) => {
     items: isRussian ? item.items_ru : item.items_uz,
     price: item.price,
     // Поддержка разных полей для изображений
-    imagePath: item?.image || item?.images || PLACEHOLDER_IMAGE,
+    imagePath: getImagePath(item?.image || item?.images) || PLACEHOLDER_IMAGE,
     specialLabel: item.new 
       ? (isRussian ? 'Новинка' : 'Yangi') 
       : (isRussian ? 'Особое' : 'Maxsus')
