@@ -13,6 +13,22 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
 
   // Check if this is a set item
   const isSet = dish?.hasOwnProperty('persons_ru') || dish?.hasOwnProperty('persons');
+  
+  // Поддержка данных из Supabase (name вместо name_ru)
+  const getName = () => {
+    if (isRussian) {
+      return dish?.name_ru || dish?.name || '';
+    }
+    return dish?.name_uz || dish?.name || '';
+  };
+  
+  // Поддержка описания/ингредиентов из Supabase
+  const getDescription = () => {
+    if (isRussian) {
+      return dish?.ingredients_ru || dish?.description || '';
+    }
+    return dish?.ingredients_uz || dish?.description_uz || dish?.description || '';
+  };
 
   // Handle backward compatibility
   const getPersons = () => {
@@ -65,8 +81,8 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
               </div>
               
               {/* Основное изображение блюда */}
-              <img loading="lazy" src={dish?.image || '/bukhara/images/background/uzbek-pattern.jpg'}
-                alt={isRussian ? dish?.name_ru : dish?.name_uz}
+              <img loading="lazy" src={dish?.image || dish?.images || '/bukhara/images/background/uzbek-pattern.jpg'}
+                alt={getName()}
                 className="w-full h-72 sm:h-96 object-cover"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -77,7 +93,7 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
               {/* Градиент и название блюда */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-6 text-white">
                 <div className="flex flex-col gap-1">
-                  <h3 className="font-playfair text-2xl font-bold">{isRussian ? dish?.name_ru : dish?.name_uz}</h3>
+                  <h3 className="font-playfair text-2xl font-bold">{getName()}</h3>
                   <div className="flex items-center space-x-2 text-sm opacity-90">
                     {isSet ? (
                       <span className="bg-sayqal-gold/90 text-white px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm inline-flex items-center">
@@ -132,7 +148,7 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
                     {isRussian ? 'Состав' : 'Tarkibi'}:
                   </h4>
                   <p className="text-gray-700 bg-sayqal-cream/20 p-4 rounded-lg">
-                    {isRussian ? dish?.ingredients_ru : dish?.ingredients_uz}
+                    {getDescription()}
                   </p>
                 </div>
               )}

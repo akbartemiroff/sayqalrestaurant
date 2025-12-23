@@ -3,12 +3,29 @@ import FoodCard from './FoodCard';
 import { motion } from 'framer-motion';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { categoryTranslations } from '../data/menu';
+import { CATEGORY_TRANSLATIONS, getCategoryTranslation } from '../hooks/useMenu';
 
 const MenuSection = ({ category, items, onItemClick }) => {
   const { language } = useLanguage();
   const isRussian = language === LANGUAGES.RU;
+  const langKey = isRussian ? 'ru' : 'uz';
 
-  const categoryTitle = categoryTranslations[category][isRussian ? 'ru' : 'uz'];
+  // Поддержка категорий из Supabase и статических категорий
+  const getCategoryTitle = () => {
+    // Сначала пробуем статические переводы из menu.js
+    if (categoryTranslations[category]) {
+      return categoryTranslations[category][langKey];
+    }
+    // Затем пробуем переводы из хука useMenu
+    if (CATEGORY_TRANSLATIONS[category]) {
+      return CATEGORY_TRANSLATIONS[category][langKey];
+    }
+    // Для динамических категорий из Supabase - возвращаем как есть
+    // (название категории уже на понятном языке)
+    return category;
+  };
+
+  const categoryTitle = getCategoryTitle();
 
   // Animation variants for staggered children animations
   const containerVariants = {

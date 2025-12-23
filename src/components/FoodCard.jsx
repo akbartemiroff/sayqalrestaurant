@@ -30,6 +30,7 @@ const FoodCard = React.memo(({ item, onClick }) => {
   const isSet = Boolean(item.persons_ru || item.persons);
   
   // Мемоизируем данные, чтобы избежать перерасчетов
+  // Поддержка данных из Supabase (name вместо name_ru) и статических данных
   const itemData = useMemo(() => ({
     persons: isRussian 
       ? (item.persons_ru || item.persons || "") 
@@ -40,11 +41,18 @@ const FoodCard = React.memo(({ item, onClick }) => {
     weight: !isRussian && item.weight_uz 
       ? item.weight_uz 
       : getLocalizedWeight(item.weight, language),
-    name: isRussian ? item.name_ru : item.name_uz,
-    ingredients: isRussian ? item.ingredients_ru : item.ingredients_uz,
+    // Поддержка Supabase (name) и статических данных (name_ru/name_uz)
+    name: isRussian 
+      ? (item.name_ru || item.name || "") 
+      : (item.name_uz || item.name || ""),
+    // Поддержка Supabase (description) и статических данных (ingredients_ru/ingredients_uz)
+    ingredients: isRussian 
+      ? (item.ingredients_ru || item.description || "") 
+      : (item.ingredients_uz || item.description_uz || item.description || ""),
     items: isRussian ? item.items_ru : item.items_uz,
     price: item.price,
-    imagePath: item?.image || PLACEHOLDER_IMAGE,
+    // Поддержка разных полей для изображений
+    imagePath: item?.image || item?.images || PLACEHOLDER_IMAGE,
     specialLabel: item.new 
       ? (isRussian ? 'Новинка' : 'Yangi') 
       : (isRussian ? 'Особое' : 'Maxsus')

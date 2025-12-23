@@ -8,7 +8,8 @@ import MenuSection from '../components/MenuSection';
 import ModalDish from '../components/ModalDish';
 import ContactsSection from '../components/ContactsSection';
 import Footer from '../components/Footer';
-import { menu, categoryTranslations } from '../data/menu';
+import { menu as staticMenu, categoryTranslations } from '../data/menu';
+import { useMenuGrouped, CATEGORY_TRANSLATIONS, sortCategories } from '../hooks/useMenu';
 import logoImage from '../assets/sayqallogo.png';
 
 const Home = () => {
@@ -18,6 +19,9 @@ const Home = () => {
   const [scrolled, setScrolled] = useState(false);
   const { language, toggleLanguage } = useLanguage();
   const isRussian = language === LANGUAGES.RU;
+  
+  // Загрузка блюд из Supabase
+  const { menu: supabaseMenu, loading, error } = useMenuGrouped();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -53,16 +57,61 @@ const Home = () => {
     setIsModalOpen(false);
   };
 
-  // Menu categories and sections
-  const menuCategories = [
-    { id: 'salads', items: menu.salads },
-    { id: 'soups', items: menu.soups },
-    { id: 'mainDishes', items: menu.mainDishes },
-    { id: 'kebabs', items: menu.kebabs },
-    { id: 'lunchboxes', items: menu.lunchboxes },
-    { id: 'sets', items: menu.sets },
-    { id: 'sauces', items: menu.sauces }
-  ];
+  // Функция для преобразования блюда из Supabase (таблица products) в формат компонента
+  const transformDish = (dish) => {
+    // Обработка веса с единицей измерения
+    let weightDisplay = '';
+    if (dish.weight) {
+      const unit = dish.weight_unit || 'g';
+      const unitLabel = unit === 'kg' ? 'кг' : (unit === 'piece' ? 'шт' : 'гр');
+      weightDisplay = `${dish.weight} ${unitLabel}`;
+    }
+
+    return {
+      id: dish.id,
+      name_ru: dish.name,
+      name_uz: dish.name_uz || dish.name,
+      name: dish.name, // для совместимости
+      ingredients_ru: dish.description,
+      ingredients_uz: dish.description_uz || dish.description,
+      description: dish.description, // для совместимости
+      weight: weightDisplay,
+      price: dish.price,
+      // В Supabase используется поле images, не image
+      image: dish.images || dish.image || ''
+    };
+  };
+
+  // Объединяем данные из Supabase с fallback на статические данные
+  const getMenuCategories = () => {
+    // Если данные из Supabase загружены, используем их
+    if (!loading && supabaseMenu && Object.keys(supabaseMenu).length > 0) {
+      const originalCategories = Object.keys(supabaseMenu);
+      // Сортируем категории в нужном порядке
+      const sortedCategoryNames = sortCategories(originalCategories);
+      
+      console.log('🔄 Категории до сортировки:', originalCategories);
+      console.log('✅ Категории после сортировки:', sortedCategoryNames);
+      
+      return sortedCategoryNames.map(category => ({
+        id: category,
+        items: supabaseMenu[category].map(transformDish)
+      }));
+    }
+    
+    // Fallback на статические данные (уже в правильном порядке)
+    return [
+      { id: 'salads', items: staticMenu.salads },
+      { id: 'soups', items: staticMenu.soups },
+      { id: 'mainDishes', items: staticMenu.mainDishes },
+      { id: 'kebabs', items: staticMenu.kebabs },
+      { id: 'lunchboxes', items: staticMenu.lunchboxes },
+      { id: 'sets', items: staticMenu.sets },
+      { id: 'sauces', items: staticMenu.sauces }
+    ];
+  };
+
+  const menuCategories = getMenuCategories();
 
   return (
     <div className="min-h-screen bg-sayqal-light text-gray-800">
@@ -204,7 +253,26 @@ const Home = () => {
               {isRussian ? 'Наше Меню' : 'Bizning Menyu'}
             </motion.h2>
 
-            {menuCategories.map(category => (
+            {/* Индикатор загрузки */}
+            {loading && (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sayqal-gold"></div>
+                <span className="ml-4 text-sayqal-burgundy font-medium">
+                  {isRussian ? 'Загрузка меню...' : 'Menyu yuklanmoqda...'}
+                </span>
+              </div>
+            )}
+
+            {/* Сообщение об ошибке */}
+            {error && (
+              <div className="text-center py-10 text-red-500">
+                <p>{isRussian ? 'Ошибка загрузки меню' : 'Menyu yuklashda xatolik'}</p>
+                <p className="text-sm text-gray-500 mt-2">{error}</p>
+              </div>
+            )}
+
+            {/* Меню */}
+            {!loading && menuCategories.map(category => (
               <React.Fragment key={category.id}>
                 {category.items && category.items.length > 0 && (
                   <MenuSection 
