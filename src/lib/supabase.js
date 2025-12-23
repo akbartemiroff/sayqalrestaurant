@@ -1,12 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+// Supabase configuration
+// Переменные окружения для Create React App должны начинаться с REACT_APP_
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://uqfywgterkhltfmrjivy.supabase.co';
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxZnl3Z3RlcmtobHRmbXJqaXZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxNDIyNjYsImV4cCI6MjA2MjcxODI2Nn0.HEDt6OEu26MYQv9hMdFJhZzq_7vAUsL3Y_j8y_QZgDw';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables');
-}
-
+// Создаём клиент Supabase
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Helper functions for common operations
