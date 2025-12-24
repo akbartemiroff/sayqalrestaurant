@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const footerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -9,7 +9,13 @@ const footerVariants = {
 
 const Footer = () => {
   const { language } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
+  
+  // Хелпер для трёх языков
+  const t = (ru, uz, en) => {
+    if (language === 'ru') return ru;
+    if (language === 'en') return en;
+    return uz;
+  };
 
   return (
     <footer className="bg-sayqal-burgundy text-white py-6">
@@ -24,7 +30,7 @@ const Footer = () => {
             className="text-center"
           >
             <p className="text-sayqal-cream">
-              &copy; 2025 Restaurant Sayqal. {isRussian ? 'Все права защищены' : 'Barcha huquqlar himoyalangan'}
+              &copy; 2025 Restaurant Sayqal. {t('Все права защищены', 'Barcha huquqlar himoyalangan', 'All rights reserved')}
             </p>
           </motion.div>
         </div>
@@ -33,4 +39,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

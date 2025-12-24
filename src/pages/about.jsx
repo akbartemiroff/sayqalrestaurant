@@ -14,7 +14,13 @@ const Footer = lazy(() => import('../components/Footer'));
 const About = () => {
   
   const { language, toggleLanguage } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
+  
+  // Хелпер для трёх языков
+  const t = (ru, uz, en) => {
+    if (language === 'ru') return ru;
+    if (language === 'en') return en;
+    return uz;
+  };
   const [scrollY, setScrollY] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -437,7 +443,7 @@ const About = () => {
             variants={fadeInVariants}
           >
             <h1 className="text-4xl md:text-5xl text-center text-sayqal-burgundy mb-3 font-playfair relative inline-block">
-              {isRussian ? 'О нашем ресторане' : 'Bizning restoran haqida'}
+              {t('О нашем ресторане', 'Bizning restoran haqida', 'About our restaurant')}
               <motion.div 
                 className="absolute -bottom-3 left-1/2 h-1 bg-sayqal-gold rounded-full" 
                 initial={{ width: 0, x: '-50%' }}
@@ -460,7 +466,7 @@ const About = () => {
                 <div className="flex items-center mb-2">
                   <div className="w-8 h-0.5 bg-sayqal-gold mr-3"></div>
                   <h3 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy font-playfair">
-                    {isRussian ? 'Премиум зал' : 'Premium zali'}
+                    {t('Премиум зал', 'Premium zali', 'Premium Hall')}
                   </h3>
                 </div>
 
@@ -469,26 +475,30 @@ const About = () => {
                   <div className="absolute top-0 right-0 w-28 h-28 opacity-5 pattern-dot rounded-bl-full"></div>
                   
                   <p className="text-lg mb-4 leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Наш премиум-зал предлагает элегантную обстановку для особых случаев и торжественных мероприятий. Изысканный интерьер, выполненный в традиционном узбекском стиле с современными акцентами, создает атмосферу роскоши и комфорта.'
-                      : 'Premium zalimiz maxsus tadbirlar va tantanali marosimlar uchun nafis muhit taklif etadi. Zamonaviy aksentlar bilan an\'anaviy o\'zbek uslubida yaratilgan hashamatli interer, hashamat va qulaylik muhitini yaratadi.'}
+                    {t(
+                      'Наш премиум-зал предлагает элегантную обстановку для особых случаев и торжественных мероприятий. Изысканный интерьер, выполненный в традиционном узбекском стиле с современными акцентами, создает атмосферу роскоши и комфорта.',
+                      'Premium zalimiz maxsus tadbirlar va tantanali marosimlar uchun nafis muhit taklif etadi. Zamonaviy aksentlar bilan an\'anaviy o\'zbek uslubida yaratilgan hashamatli interer, hashamat va qulaylik muhitini yaratadi.',
+                      'Our premium hall offers an elegant setting for special occasions and celebrations. The exquisite interior, designed in traditional Uzbek style with modern accents, creates an atmosphere of luxury and comfort.'
+                    )}
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Безупречное обслуживание и внимание к деталям делают каждое посещение незабываемым. Идеально подходит для корпоративных мероприятий, свадеб и семейных праздников.'
-                      : 'Benuqson xizmat va tafsilotlarga e\'tibor har bir tashrifni unutilmas qiladi. Korporativ tadbirlar, to\'ylar va oilaviy bayramlar uchun ideal.'}
+                    {t(
+                      'Безупречное обслуживание и внимание к деталям делают каждое посещение незабываемым. Идеально подходит для корпоративных мероприятий, свадеб и семейных праздников.',
+                      'Benuqson xizmat va tafsilotlarga e\'tibor har bir tashrifni unutilmas qiladi. Korporativ tadbirlar, to\'ylar va oilaviy bayramlar uchun ideal.',
+                      'Impeccable service and attention to detail make every visit unforgettable. Perfect for corporate events, weddings, and family celebrations.'
+                    )}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Вместимость' : 'Sig\'imi'}</div>
-                    <div className="text-2xl font-bold">{isRussian ? 'до 150 чел.' : '150 kishigacha'}</div>
+                    <div className="font-semibold mb-1">{t('Вместимость', 'Sig\'imi', 'Capacity')}</div>
+                    <div className="text-2xl font-bold">{t('до 150 чел.', '150 kishigacha', 'up to 150 pers.')}</div>
                   </div>
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Подходит для' : 'Mos keladi'}</div>
+                    <div className="font-semibold mb-1">{t('Подходит для', 'Mos keladi', 'Suitable for')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Торжеств, Свадеб' : 'Tantanalar, To\'ylar'}
+                      {t('Торжеств, Свадеб', 'Tantanalar, To\'ylar', 'Celebrations, Weddings')}
                     </div>
                   </div>
                 </div>
@@ -504,7 +514,7 @@ const About = () => {
                   >
                     <OptimizedImage 
                       src={premiumImages[premiumImageIndex]}
-                      alt={isRussian ? "Премиум зал" : "Premium zali"} 
+                      alt={t("Премиум зал", "Premium zali", "Premium Hall")} 
                       className="w-full h-[200px] sm:h-[350px] md:h-[450px] object-cover rounded-lg section-image"
                       width={800} 
                       height={600}
@@ -522,7 +532,7 @@ const About = () => {
                           changeSlide(setPremiumImageIndex, premiumImageIndex, premiumImages, -1);
                         }}
                         className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Предыдущее изображение" : "Oldingi rasm"}
+                        aria-label={t("Предыдущее изображение", "Oldingi rasm", "Previous image")}
                       >
                         <FiChevronLeft />
                       </button>
@@ -532,7 +542,7 @@ const About = () => {
                           changeSlide(setPremiumImageIndex, premiumImageIndex, premiumImages, 1);
                         }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Следующее изображение" : "Keyingi rasm"}
+                        aria-label={t("Следующее изображение", "Keyingi rasm", "Next image")}
                       >
                         <FiChevronRight />
                       </button>
@@ -551,7 +561,7 @@ const About = () => {
                     transition={{ delay: 0.5 }}
                   >
                     <span className="font-medium">
-                      {isRussian ? "Роскошная обстановка" : "Hashamatli muhit"}
+                      {t("Роскошная обстановка", "Hashamatli muhit", "Luxurious atmosphere")}
                     </span>
                   </motion.div>
                 </div>
@@ -569,7 +579,7 @@ const About = () => {
               <div className="lg:w-1/2 space-y-5">
                 <div className="flex items-center justify-end mb-2">
                   <h3 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy font-playfair">
-                    {isRussian ? 'VIP зал' : 'VIP zali'}
+                    {t('VIP зал', 'VIP zali', 'VIP Hall')}
                   </h3>
                   <div className="w-8 h-0.5 bg-sayqal-gold ml-3"></div>
                 </div>
@@ -579,26 +589,30 @@ const About = () => {
                   <div className="absolute top-0 left-0 w-28 h-28 opacity-5 pattern-dot rounded-br-full"></div>
                   
                   <p className="text-lg mb-4 leading-relaxed text-gray-700 relative z-10">
-                    {isRussian 
-                      ? 'VIP-зал Sayqal - это эксклюзивное пространство для тех, кто ценит приватность и особый подход. Здесь каждая деталь продумана для создания уютной и роскошной атмосферы. Отдельный вход обеспечивает полную конфиденциальность.'
-                      : 'Sayqalning VIP zali - bu maxfiylik va maxsus yondashuvni qadrlaydigan kishilar uchun eksklyuziv makon. Bu erda har bir tafsilot qulay va hashamatli muhit yaratish uchun o\'ylangan. Alohida kirish to\'liq maxfiylikni ta\'minlaydi.'}
+                    {t(
+                      'VIP-зал Sayqal - это эксклюзивное пространство для тех, кто ценит приватность и особый подход. Здесь каждая деталь продумана для создания уютной и роскошной атмосферы. Отдельный вход обеспечивает полную конфиденциальность.',
+                      'Sayqalning VIP zali - bu maxfiylik va maxsus yondashuvni qadrlaydigan kishilar uchun eksklyuziv makon. Bu erda har bir tafsilot qulay va hashamatli muhit yaratish uchun o\'ylangan. Alohida kirish to\'liq maxfiylikni ta\'minlaydi.',
+                      'Sayqal VIP hall is an exclusive space for those who value privacy and a special approach. Every detail here is designed to create a cozy and luxurious atmosphere. A separate entrance ensures complete confidentiality.'
+                    )}
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Персональный подход к обслуживанию, изысканное меню и возможность индивидуальной настройки пространства делают VIP-зал идеальным выбором для деловых встреч и романтических вечеров.'
-                      : 'Xizmat ko\'rsatishga shaxsiy yondashuv, nafis menyu va makonni individual sozlash imkoniyati VIP zalini ishbilarmonlik uchrashuvi va romantik kechalar uchun ideal tanlov qiladi.'}
+                    {t(
+                      'Персональный подход к обслуживанию, изысканное меню и возможность индивидуальной настройки пространства делают VIP-зал идеальным выбором для деловых встреч и романтических вечеров.',
+                      'Xizmat ko\'rsatishga shaxsiy yondashuv, nafis menyu va makonni individual sozlash imkoniyati VIP zalini ishbilarmonlik uchrashuvi va romantik kechalar uchun ideal tanlov qiladi.',
+                      'Personal approach to service, exquisite menu, and the ability to customize the space make the VIP hall an ideal choice for business meetings and romantic evenings.'
+                    )}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Вместимость' : 'Sig\'imi'}</div>
-                    <div className="text-2xl font-bold">{isRussian ? 'до 20 чел.' : '20 kishigacha'}</div>
+                    <div className="font-semibold mb-1">{t('Вместимость', 'Sig\'imi', 'Capacity')}</div>
+                    <div className="text-2xl font-bold">{t('до 20 чел.', '20 kishigacha', 'up to 20 pers.')}</div>
                   </div>
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Особенности' : 'Xususiyatlar'}</div>
+                    <div className="font-semibold mb-1">{t('Особенности', 'Xususiyatlar', 'Features')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Приватность, Люкс' : 'Maxfiylik, Luks'}
+                      {t('Приватность, Люкс', 'Maxfiylik, Luks', 'Privacy, Luxury')}
                     </div>
                   </div>
                 </div>
@@ -614,7 +628,7 @@ const About = () => {
                   >
                     <OptimizedImage 
                       src={vipImages[vipImageIndex]}
-                      alt={isRussian ? "VIP зал" : "VIP zali"} 
+                      alt={t("VIP зал", "VIP zali", "VIP Hall")} 
                       className="w-full h-[200px] sm:h-[350px] md:h-[450px] object-cover rounded-lg section-image"
                       width={800} 
                       height={600}
@@ -632,7 +646,7 @@ const About = () => {
                           changeSlide(setVipImageIndex, vipImageIndex, vipImages, -1);
                         }}
                         className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Предыдущее изображение" : "Oldingi rasm"}
+                        aria-label={t("Предыдущее изображение", "Oldingi rasm", "Previous image")}
                       >
                         <FiChevronLeft />
                       </button>
@@ -642,7 +656,7 @@ const About = () => {
                           changeSlide(setVipImageIndex, vipImageIndex, vipImages, 1);
                         }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Следующее изображение" : "Keyingi rasm"}
+                        aria-label={t("Следующее изображение", "Keyingi rasm", "Next image")}
                       >
                         <FiChevronRight />
                       </button>
@@ -662,7 +676,7 @@ const About = () => {
                       transition={{ delay: 0.5 }}
                     >
                       <span className="font-medium">
-                        {isRussian ? "Элитное обслуживание" : "Elite xizmat"}
+                        {t("Элитное обслуживание", "Elite xizmat", "Elite service")}
                       </span>
                     </motion.div>
                   </div>
@@ -682,7 +696,7 @@ const About = () => {
                 <div className="flex items-center mb-2">
                   <div className="w-8 h-0.5 bg-sayqal-gold mr-3"></div>
                   <h3 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy font-playfair">
-                    {isRussian ? 'Общий зал' : 'Umumiy zal'}
+                    {t('Общий зал', 'Umumiy zal', 'Main Hall')}
                   </h3>
                 </div>
 
@@ -691,28 +705,32 @@ const About = () => {
                   <div className="absolute top-0 right-0 w-28 h-28 opacity-5 pattern-dot rounded-bl-full"></div>
                   
                   <p className="text-lg mb-4 leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Светлый и просторный общий зал ресторана Sayqal создан для комфортного отдыха и наслаждения аутентичной узбекской кухней. Неповторимый восточный дизайн с современными элементами создает атмосферу гостеприимства и тепла.'
-                      : 'Sayqal restoranining yorug\' va keng umumiy zali qulay dam olish va haqiqiy o\'zbek oshxonasidan zavqlanish uchun yaratilgan. Noyob sharqona dizayn zamonaviy elementlar bilan mehmondo\'stlik va iliqlik muhitini yaratadi.'}
+                    {t(
+                      'Светлый и просторный общий зал ресторана Sayqal создан для комфортного отдыха и наслаждения аутентичной узбекской кухней. Неповторимый восточный дизайн с современными элементами создает атмосферу гостеприимства и тепла.',
+                      'Sayqal restoranining yorug\' va keng umumiy zali qulay dam olish va haqiqiy o\'zbek oshxonasidan zavqlanish uchun yaratilgan. Noyob sharqona dizayn zamonaviy elementlar bilan mehmondo\'stlik va iliqlik muhitini yaratadi.',
+                      'The bright and spacious main hall of Sayqal restaurant is designed for comfortable relaxation and enjoyment of authentic Uzbek cuisine. The unique oriental design with modern elements creates an atmosphere of hospitality and warmth.'
+                    )}
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Зал идеально подходит для семейных обедов, встреч с друзьями и повседневных посещений. Наши гости всегда отмечают особую атмосферу и внимательное обслуживание.'
-                      : 'Zal oilaviy tushliklar, do\'stlar bilan uchrashuvlar va kundalik tashriflar uchun juda mos. Mehmonlarimiz doimo alohida muhit va e\'tiborli xizmatni ta\'kidlashadi.'}
+                    {t(
+                      'Зал идеально подходит для семейных обедов, встреч с друзьями и повседневных посещений. Наши гости всегда отмечают особую атмосферу и внимательное обслуживание.',
+                      'Zal oilaviy tushliklar, do\'stlar bilan uchrashuvlar va kundalik tashriflar uchun juda mos. Mehmonlarimiz doimo alohida muhit va e\'tiborli xizmatni ta\'kidlashadi.',
+                      'The hall is perfect for family dinners, meetings with friends, and everyday visits. Our guests always note the special atmosphere and attentive service.'
+                    )}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Особенности' : 'Xususiyatlar'}</div>
+                    <div className="font-semibold mb-1">{t('Особенности', 'Xususiyatlar', 'Features')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Светлый, Просторный' : 'Yorug\', Keng'}
+                      {t('Светлый, Просторный', 'Yorug\', Keng', 'Bright, Spacious')}
                     </div>
                   </div>
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Подходит для' : 'Mos keladi'}</div>
+                    <div className="font-semibold mb-1">{t('Подходит для', 'Mos keladi', 'Suitable for')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Семейных встреч, Групп' : 'Oilaviy uchrashuvlar, Guruhlar'}
+                      {t('Семейных встреч, Групп', 'Oilaviy uchrashuvlar, Guruhlar', 'Family gatherings, Groups')}
                     </div>
                   </div>
                 </div>
@@ -728,7 +746,7 @@ const About = () => {
                   >
                     <OptimizedImage 
                       src={commonImages[commonImageIndex]}
-                      alt={isRussian ? "Общий зал" : "Umumiy zal"}
+                      alt={t("Общий зал", "Umumiy zal", "Main Hall")}
                       className="gallery-image w-full h-[200px] sm:h-[350px] md:h-[450px] object-cover rounded-lg section-image"
                     />
                   </motion.div>
@@ -742,7 +760,7 @@ const About = () => {
                           changeSlide(setCommonImageIndex, commonImageIndex, commonImages, -1);
                         }}
                         className="gallery-nav-button absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Предыдущее изображение" : "Oldingi rasm"}
+                        aria-label={t("Предыдущее изображение", "Oldingi rasm", "Previous image")}
                       >
                         <IoIosArrowBack className="text-xl" />
                       </button>
@@ -752,7 +770,7 @@ const About = () => {
                           changeSlide(setCommonImageIndex, commonImageIndex, commonImages, 1);
                         }}
                         className="gallery-nav-button absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Следующее изображение" : "Keyingi rasm"}
+                        aria-label={t("Следующее изображение", "Keyingi rasm", "Next image")}
                       >
                         <IoIosArrowForward className="text-xl" />
                       </button>
@@ -771,7 +789,7 @@ const About = () => {
                     transition={{ delay: 0.5 }}
                   >
                     <span className="font-medium">
-                      {isRussian ? "Восточное гостеприимство" : "Sharqona mehmondo'stlik"}
+                      {t("Восточное гостеприимство", "Sharqona mehmondo'stlik", "Eastern hospitality")}
                     </span>
                   </motion.div>
                 </div>
@@ -789,7 +807,7 @@ const About = () => {
               <div className="lg:w-1/2 space-y-5">
                 <div className="flex items-center justify-end mb-2">
                   <h3 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy font-playfair">
-                    {isRussian ? 'Наши кабины' : 'Bizning kabinalarimiz'}
+                    {t('Наши кабины', 'Bizning kabinalarimiz', 'Our Private Rooms')}
                   </h3>
                   <div className="w-8 h-0.5 bg-sayqal-gold ml-3"></div>
                 </div>
@@ -799,26 +817,30 @@ const About = () => {
                   <div className="absolute top-0 left-0 w-28 h-28 opacity-5 pattern-dot rounded-br-full"></div>
                   
                   <p className="text-lg mb-4 leading-relaxed text-gray-700 relative z-10">
-                    {isRussian 
-                      ? 'Для любителей уединённого отдыха мы предлагаем комфортабельные кабины, где вы сможете насладиться едой и общением в приватной обстановке. Каждая кабина оформлена в восточном стиле и создаёт ощущение особого пространства.'
-                      : 'Xilvat dam olishni yaxshi ko\'radiganlar uchun biz qulay kabinalarni taklif etamiz, bu erda siz ovqat va muloqotdan xususi muhitda bahramand bo\'lishingiz mumkin. Har bir kabina sharqona uslubda bezatilgan va maxsus makon hissini yaratadi.'}
+                    {t(
+                      'Для любителей уединённого отдыха мы предлагаем комфортабельные кабины, где вы сможете насладиться едой и общением в приватной обстановке. Каждая кабина оформлена в восточном стиле и создаёт ощущение особого пространства.',
+                      'Xilvat dam olishni yaxshi ko\'radiganlar uchun biz qulay kabinalarni taklif etamiz, bu erda siz ovqat va muloqotdan xususi muhitda bahramand bo\'lishingiz mumkin. Har bir kabina sharqona uslubda bezatilgan va maxsus makon hissini yaratadi.',
+                      'For those who love secluded relaxation, we offer comfortable private rooms where you can enjoy food and conversation in a private setting. Each room is decorated in oriental style and creates a sense of a special space.'
+                    )}
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Идеальный выбор для романтического ужина, небольшого семейного праздника или деловой встречи, где важна конфиденциальность.'
-                      : 'Romantik kechki ovqat, kichik oilaviy bayram yoki maxfiylik muhim bo\'lgan ishbilarmonlik uchrashuvi uchun ideal tanlov.'}
+                    {t(
+                      'Идеальный выбор для романтического ужина, небольшого семейного праздника или деловой встречи, где важна конфиденциальность.',
+                      'Romantik kechki ovqat, kichik oilaviy bayram yoki maxfiylik muhim bo\'lgan ishbilarmonlik uchrashuvi uchun ideal tanlov.',
+                      'An ideal choice for a romantic dinner, small family celebration, or business meeting where privacy is important.'
+                    )}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Вместимость' : 'Sig\'imi'}</div>
-                    <div className="text-2xl font-bold">{isRussian ? '4-8 чел.' : '4-8 kishi'}</div>
+                    <div className="font-semibold mb-1">{t('Вместимость', 'Sig\'imi', 'Capacity')}</div>
+                    <div className="text-2xl font-bold">{t('4-8 чел.', '4-8 kishi', '4-8 pers.')}</div>
                   </div>
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Особенности' : 'Xususiyatlar'}</div>
+                    <div className="font-semibold mb-1">{t('Особенности', 'Xususiyatlar', 'Features')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Уединенность, Комфорт' : 'Xilvatlik, Qulaylik'}
+                      {t('Уединенность, Комфорт', 'Xilvatlik, Qulaylik', 'Seclusion, Comfort')}
                     </div>
                   </div>
                 </div>
@@ -834,7 +856,7 @@ const About = () => {
                   >
                     <OptimizedImage 
                       src={cabinImages[cabinImageIndex]}
-                      alt={isRussian ? "Наши кабины" : "Bizning kabinalarimiz"} 
+                      alt={t("Наши кабины", "Bizning kabinalarimiz", "Our Private Rooms")} 
                       className="w-full h-[200px] sm:h-[350px] md:h-[450px] object-cover rounded-lg section-image"
                       width={800} 
                       height={600}
@@ -852,7 +874,7 @@ const About = () => {
                           changeSlide(setCabinImageIndex, cabinImageIndex, cabinImages, -1);
                         }}
                         className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Предыдущее изображение" : "Oldingi rasm"}
+                        aria-label={t("Предыдущее изображение", "Oldingi rasm", "Previous image")}
                       >
                         <FiChevronLeft />
                       </button>
@@ -862,7 +884,7 @@ const About = () => {
                           changeSlide(setCabinImageIndex, cabinImageIndex, cabinImages, 1);
                         }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Следующее изображение" : "Keyingi rasm"}
+                        aria-label={t("Следующее изображение", "Keyingi rasm", "Next image")}
                       >
                         <FiChevronRight />
                       </button>
@@ -881,7 +903,7 @@ const About = () => {
                     transition={{ delay: 0.5 }}
                   >
                     <span className="font-medium">
-                      {isRussian ? "Приватность и уют" : "Xususiy va qulaylik"}
+                      {t("Приватность и уют", "Xususiy va qulaylik", "Privacy and comfort")}
                     </span>
                   </motion.div>
                 </div>
@@ -900,7 +922,7 @@ const About = () => {
                 <div className="flex items-center mb-2">
                   <div className="w-8 h-0.5 bg-sayqal-gold mr-3"></div>
                   <h3 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy font-playfair">
-                    {isRussian ? 'Наша терраса' : 'Bizning terrassamiz'}
+                    {t('Наша терраса', 'Bizning terrassamiz', 'Our Terrace')}
                   </h3>
                 </div>
 
@@ -909,26 +931,30 @@ const About = () => {
                   <div className="absolute top-0 right-0 w-28 h-28 opacity-5 pattern-dot rounded-bl-full"></div>
                   
                   <p className="text-lg mb-4 leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'В теплое время года мы приглашаем наших гостей насладиться трапезой на открытой террасе. Свежий воздух, уютная атмосфера и вкусная еда – идеальное сочетание для приятного отдыха.'
-                      : 'Yilning iliq vaqtida biz mehmonlarimizni ochiq terrassada ovqatlanishdan bahramand bo\'lishga taklif qilamiz. Toza havo, qulay muhit va mazali taom - yoqimli dam olish uchun ideal uyg\'unlik.'}
+                    {t(
+                      'В теплое время года мы приглашаем наших гостей насладиться трапезой на открытой террасе. Свежий воздух, уютная атмосфера и вкусная еда – идеальное сочетание для приятного отдыха.',
+                      'Yilning iliq vaqtida biz mehmonlarimizni ochiq terrassada ovqatlanishdan bahramand bo\'lishga taklif qilamiz. Toza havo, qulay muhit va mazali taom - yoqimli dam olish uchun ideal uyg\'unlik.',
+                      'In warm weather, we invite our guests to enjoy a meal on the open terrace. Fresh air, cozy atmosphere and delicious food - the perfect combination for a pleasant relaxation.'
+                    )}
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 relative z-10">
-                    {isRussian
-                      ? 'Терраса оформлена в восточном стиле с современными элементами, создающими комфортную обстановку для приятного времяпрепровождения в кругу друзей и близких.'
-                      : 'Terrassa do\'stlar va yaqinlar davrasida yoqimli vaqt o\'tkazish uchun qulay sharoit yaratadigan zamonaviy elementlar bilan sharqona uslubda bezatilgan.'}
+                    {t(
+                      'Терраса оформлена в восточном стиле с современными элементами, создающими комфортную обстановку для приятного времяпрепровождения в кругу друзей и близких.',
+                      'Terrassa do\'stlar va yaqinlar davrasida yoqimli vaqt o\'tkazish uchun qulay sharoit yaratadigan zamonaviy elementlar bilan sharqona uslubda bezatilgan.',
+                      'The terrace is decorated in oriental style with modern elements, creating a comfortable setting for pleasant time with friends and family.'
+                    )}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Вместимость' : 'Sig\'imi'}</div>
-                    <div className="text-2xl font-bold">{isRussian ? 'до 150 чел.' : '150 kishigacha'}</div>
+                    <div className="font-semibold mb-1">{t('Вместимость', 'Sig\'imi', 'Capacity')}</div>
+                    <div className="text-2xl font-bold">{t('до 150 чел.', '150 kishigacha', 'up to 150 pers.')}</div>
                   </div>
                   <div className="bg-white text-sayqal-burgundy py-3 px-4 rounded-lg text-center border border-sayqal-burgundy/10 shadow-sm">
-                    <div className="font-semibold mb-1">{isRussian ? 'Сезон' : 'Mavsum'}</div>
+                    <div className="font-semibold mb-1">{t('Сезон', 'Mavsum', 'Season')}</div>
                     <div className="text-sm font-medium">
-                      {isRussian ? 'Весна-Осень' : 'Bahor-Kuz'}
+                      {t('Весна-Осень', 'Bahor-Kuz', 'Spring-Autumn')}
                     </div>
                   </div>
                 </div>
@@ -944,7 +970,7 @@ const About = () => {
                   >
                     <OptimizedImage 
                       src={terraceImages[terraceImageIndex]}
-                      alt={isRussian ? "Наша терраса" : "Bizning terrassamiz"}
+                      alt={t("Наша терраса", "Bizning terrassamiz", "Our Terrace")}
                       className="w-full h-[200px] sm:h-[350px] md:h-[450px] object-cover rounded-lg section-image"
                       width={800} 
                       height={600}
@@ -962,7 +988,7 @@ const About = () => {
                           changeSlide(setTerraceImageIndex, terraceImageIndex, terraceImages, -1);
                         }}
                         className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Предыдущее изображение" : "Oldingi rasm"}
+                        aria-label={t("Предыдущее изображение", "Oldingi rasm", "Previous image")}
                       >
                         <FiChevronLeft />
                       </button>
@@ -972,7 +998,7 @@ const About = () => {
                           changeSlide(setTerraceImageIndex, terraceImageIndex, terraceImages, 1);
                         }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-sayqal-burgundy transition-all duration-200"
-                        aria-label={isRussian ? "Следующее изображение" : "Keyingi rasm"}
+                        aria-label={t("Следующее изображение", "Keyingi rasm", "Next image")}
                       >
                         <FiChevronRight />
                       </button>
@@ -992,7 +1018,7 @@ const About = () => {
                       transition={{ delay: 0.5 }}
                     >
                       <span className="font-medium">
-                        {isRussian ? "Отдых на свежем воздухе" : "Ochiq havoda dam olish"}
+                        {t("Отдых на свежем воздухе", "Ochiq havoda dam olish", "Outdoor relaxation")}
                       </span>
                     </motion.div>
                   </div>
@@ -1011,17 +1037,21 @@ const About = () => {
             >
               <div className="md:w-3/5">
                 <h2 className="text-2xl md:text-3xl font-semibold text-sayqal-burgundy mb-6 font-playfair relative before:content-[''] before:absolute before:w-12 before:h-1 before:-bottom-2 before:left-0 before:bg-sayqal-gold before:rounded-full">
-                  {isRussian ? 'Добро пожаловать в Sayqal' : 'Sayqalga xush kelibsiz'}
+                  {t('Добро пожаловать в Sayqal', 'Sayqalga xush kelibsiz', 'Welcome to Sayqal')}
                 </h2>
                 <p className="text-lg mb-5 leading-relaxed text-gray-700">
-                  {isRussian 
-                    ? 'Ресторан Sayqal - это уникальное сочетание аутентичной узбекской кухни и современного подхода к сервису. Мы гордимся тем, что предлагаем нашим гостям блюда, приготовленные по традиционным рецептам с использованием только свежих и качественных ингредиентов.'
-                    : 'Sayqal restorani - bu o\'zbek milliy taomlari va zamonaviy xizmat ko\'rsatishning noyob uyg\'unlashuvidir. Biz mehmonlarimizga faqat yangi va sifatli ingredientlardan foydalangan holda an\'anaviy retseptlar bo\'yicha tayyorlangan taomlarni taklif etishdan faxrlanamiz.'}
+                  {t(
+                    'Ресторан Sayqal - это уникальное сочетание аутентичной узбекской кухни и современного подхода к сервису. Мы гордимся тем, что предлагаем нашим гостям блюда, приготовленные по традиционным рецептам с использованием только свежих и качественных ингредиентов.',
+                    'Sayqal restorani - bu o\'zbek milliy taomlari va zamonaviy xizmat ko\'rsatishning noyob uyg\'unlashuvidir. Biz mehmonlarimizga faqat yangi va sifatli ingredientlardan foydalangan holda an\'anaviy retseptlar bo\'yicha tayyorlangan taomlarni taklif etishdan faxrlanamiz.',
+                    'Sayqal Restaurant is a unique combination of authentic Uzbek cuisine and a modern approach to service. We are proud to offer our guests dishes prepared according to traditional recipes using only fresh and quality ingredients.'
+                  )}
                 </p>
                 <p className="text-lg leading-relaxed text-gray-700">
-                  {isRussian 
-                    ? 'Наша миссия - создать пространство, где каждый гость может не только насладиться превосходной едой, но и погрузиться в атмосферу узбекского гостеприимства и культуры.'
-                    : 'Bizning vazifamiz - har bir mehmon nafaqat ajoyib taomlardan bahramand bo\'lishi, balki o\'zbek mehmondo\'stligi va madaniyati muhitiga sho\'ng\'ishi mumkin bo\'lgan joy yaratishdir.'}
+                  {t(
+                    'Наша миссия - создать пространство, где каждый гость может не только насладиться превосходной едой, но и погрузиться в атмосферу узбекского гостеприимства и культуры.',
+                    'Bizning vazifamiz - har bir mehmon nafaqat ajoyib taomlardan bahramand bo\'lishi, balki o\'zbek mehmondo\'stligi va madaniyati muhitiga sho\'ng\'ishi mumkin bo\'lgan joy yaratishdir.',
+                    'Our mission is to create a space where every guest can not only enjoy excellent food, but also immerse themselves in the atmosphere of Uzbek hospitality and culture.'
+                  )}
                 </p>
               </div>
               <motion.div 
@@ -1033,7 +1063,7 @@ const About = () => {
                   <div className="p-2 sm:p-4">
                     <img 
                       src={`${process.env.PUBLIC_URL}/images/about/kocha/IMG_3456.png`}
-                      alt={isRussian ? "Ресторан Sayqal" : "Sayqal restorani"} 
+                      alt={t("Ресторан Sayqal", "Sayqal restorani", "Sayqal Restaurant")} 
                       className="w-full h-auto max-h-[250px] sm:max-h-[350px] md:max-h-[450px] object-contain rounded-lg max-w-full section-image"
                       loading="eager"
                       onError={(e) => { 
@@ -1059,7 +1089,7 @@ const About = () => {
                 to="/#salads" 
                 className="flex items-center justify-center gap-2 bg-sayqal-gold hover:bg-sayqal-gold/90 text-sayqal-burgundy font-medium rounded-xl px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl text-center"
               >
-                <span>{isRussian ? 'Перейти к меню' : 'Menyuga o\'tish'}</span>
+                <span>{t('Перейти к меню', 'Menyuga o\'tish', 'Go to Menu')}</span>
                 <IoIosArrowForward />
               </Link>
             </motion.div>
