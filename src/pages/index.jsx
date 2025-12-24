@@ -17,7 +17,9 @@ const Home = () => {
   const [selectedDish, setSelectedDish] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { language, toggleLanguage } = useLanguage();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const langDropdownRef = React.useRef(null);
+  const { language, toggleLanguage, setLanguage } = useLanguage();
   
   // Хелпер для трёх языков
   const t = (ru, uz, en) => {
@@ -26,8 +28,24 @@ const Home = () => {
     return uz; // uz по умолчанию
   };
   
-  // Следующий язык для переключателя (UZ -> RU -> EN -> UZ)
-  const nextLang = { uz: 'RU', ru: 'EN', en: 'UZ' }[language] || 'RU';
+  // Выбор конкретного языка
+  const handleLanguageSelect = (lang) => {
+    if (lang !== language && setLanguage) {
+      setLanguage(lang);
+    }
+    setLangDropdownOpen(false);
+  };
+  
+  // Закрытие dropdown при клике вне
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   // Загрузка блюд из Supabase
   const { menu: supabaseMenu, loading, error } = useMenuGrouped();
@@ -184,15 +202,51 @@ const Home = () => {
               </ScrollLink>
             </div>
             
-            {/* Language toggle */}
+            {/* Language selector dropdown */}
             <div className="flex items-center">
-              <button 
-                className="h-10 w-10 flex items-center justify-center rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium"
-                onClick={toggleLanguage}
-                aria-label={t('Сменить язык', 'Tilni o\'zgartirish', 'Change language')}
-              >
-                {nextLang}
-              </button>
+              <div className="relative" ref={langDropdownRef}>
+                <button 
+                  className="h-10 px-3 flex items-center justify-center gap-1 rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium"
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  aria-label={t('Выбрать язык', 'Tilni tanlash', 'Select language')}
+                >
+                  {language.toUpperCase()}
+                  <svg className={`w-3 h-3 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-28 bg-white rounded-lg shadow-lg border border-sayqal-gold/20 overflow-hidden z-50"
+                  >
+                    {[
+                      { code: 'uz', label: 'UZ', name: "O'zbek" },
+                      { code: 'ru', label: 'RU', name: 'Русский' },
+                      { code: 'en', label: 'EN', name: 'English' }
+                    ].map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageSelect(lang.code)}
+                        className={`w-full px-4 py-2 text-left hover:bg-sayqal-cream transition-colors flex items-center justify-between ${
+                          language === lang.code ? 'bg-sayqal-gold/10 text-sayqal-burgundy font-semibold' : 'text-gray-700'
+                        }`}
+                      >
+                        <span>{lang.label}</span>
+                        {language === lang.code && (
+                          <svg className="w-4 h-4 text-sayqal-gold" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
 
               {/* Mobile menu button */}
               <div className="md:hidden ml-2">

@@ -62,7 +62,7 @@ const activeItemVariants = {
 };
 
 const Navbar = () => {
-  const { language, toggleLanguage } = useLanguage();
+  const { language, toggleLanguage, setLanguage } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   
   // Хелпер для получения значения по языку
@@ -72,8 +72,9 @@ const Navbar = () => {
     return uz;
   };
   
-  // Следующий язык для переключателя
-  const nextLang = { uz: 'RU', ru: 'EN', en: 'UZ' }[language] || 'RU';
+  // Состояние для выпадающего списка языков
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef(null);
   const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -115,9 +116,24 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  const handleLanguageToggle = () => {
-    toggleLanguage();
+  // Выбор конкретного языка
+  const handleLanguageSelect = (lang) => {
+    if (lang !== language && setLanguage) {
+      setLanguage(lang);
+    }
+    setLangDropdownOpen(false);
   };
+  
+  // Закрытие dropdown при клике вне
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const scrollToSection = useCallback((e, sectionId) => {
     e.preventDefault();
@@ -414,16 +430,54 @@ const Navbar = () => {
             
             {/* Действия - Переключение языка, Мобильное меню */}
             <div className="flex items-center space-x-1 sm:space-x-3">
-              {/* Переключение языка - обновленный дизайн */}
-              <motion.button
-                onClick={handleLanguageToggle}
-                className="h-9 px-3 rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium"
-                aria-label={t("Сменить язык", "Tilni o'zgartirish", "Change language")}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {nextLang}
-              </motion.button>
+              {/* Выбор языка - dropdown */}
+              <div className="relative" ref={langDropdownRef}>
+                <motion.button
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  className="h-9 px-3 rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium flex items-center gap-1"
+                  aria-label={t("Выбрать язык", "Tilni tanlash", "Select language")}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {language.toUpperCase()}
+                  <svg className={`w-3 h-3 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.button>
+                
+                <AnimatePresence>
+                  {langDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-24 bg-white rounded-lg shadow-lg border border-sayqal-gold/20 overflow-hidden z-50"
+                    >
+                      {[
+                        { code: 'uz', label: 'UZ', name: "O'zbek" },
+                        { code: 'ru', label: 'RU', name: 'Русский' },
+                        { code: 'en', label: 'EN', name: 'English' }
+                      ].map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageSelect(lang.code)}
+                          className={`w-full px-4 py-2 text-left hover:bg-sayqal-cream transition-colors flex items-center justify-between ${
+                            language === lang.code ? 'bg-sayqal-gold/10 text-sayqal-burgundy font-semibold' : 'text-gray-700'
+                          }`}
+                        >
+                          <span>{lang.label}</span>
+                          {language === lang.code && (
+                            <svg className="w-4 h-4 text-sayqal-gold" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               
               {/* Мобильное меню - улучшенная кнопка */}
               <div className="md:hidden">
