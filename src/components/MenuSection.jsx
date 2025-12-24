@@ -2,20 +2,69 @@ import React from 'react';
 import FoodCard from './FoodCard';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { categoryTranslations } from '../data/menu';
-import { getCategoryTranslation } from '../services/dishService';
+
+// Полный маппинг всех возможных названий категорий на 3 языка
+const ALL_CATEGORY_TRANSLATIONS = {
+  // Английские названия
+  'Salads': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
+  'First Courses': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
+  'Main Dishes': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'Kebabs': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
+  'Lunchbox': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'Sets': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
+  'Sauces': { uz: 'Souslar', ru: 'Соусы', en: 'Sauces' },
+  'Bread': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
+  'Desserts': { uz: 'Desertlar', ru: 'Десерты', en: 'Desserts' },
+  'Beverages': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
+  // Узбекские названия
+  'Salatlar': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
+  'Birinchi taomlar': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
+  'Ikkinchi taomlar': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'Shashliklar': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
+  'Lanchboks': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'Lanch boks': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'Setlar': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
+  'Souslar': { uz: 'Souslar', ru: 'Соусы', en: 'Sauces' },
+  'Non': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
+  'Nonlar': { uz: 'Nonlar', ru: 'Хлеб', en: 'Bread' },
+  'Desertlar': { uz: 'Desertlar', ru: 'Десерты', en: 'Desserts' },
+  'Shirinliklar': { uz: 'Shirinliklar', ru: 'Десерты', en: 'Desserts' },
+  'Ichimliklar': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
+  // Русские названия
+  'Салаты': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
+  'Первые блюда': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
+  'Вторые блюда': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'Шашлыки': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
+  'Ланчбокс': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'Сеты': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
+  'Соусы': { uz: 'Souslar', ru: 'Соусы', en: 'Sauces' },
+  'Хлеб': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
+  'Десерты': { uz: 'Desertlar', ru: 'Десерты', en: 'Desserts' },
+  'Напитки': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
+  // Статические ключи (из menu.js)
+  'salads': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
+  'soups': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
+  'mainDishes': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'kebabs': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
+  'lunchboxes': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'sets': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
+  'sauces': { uz: 'Souslar', ru: 'Соусы', en: 'Sauces' },
+  'breads': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
+  'desserts': { uz: 'Desertlar', ru: 'Десерты', en: 'Desserts' },
+  'beverages': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' }
+};
 
 const MenuSection = ({ category, items, onItemClick }) => {
   const { language } = useLanguage();
 
-  // Поддержка категорий из Supabase и статических категорий с тремя языками
+  // Перевод категории на выбранный язык
   const getCategoryTitle = () => {
-    // Сначала пробуем статические переводы из menu.js
-    if (categoryTranslations[category] && categoryTranslations[category][language]) {
-      return categoryTranslations[category][language];
+    const translations = ALL_CATEGORY_TRANSLATIONS[category];
+    if (translations && translations[language]) {
+      return translations[language];
     }
-    // Используем функцию перевода категорий из dishService
-    return getCategoryTranslation(category, language);
+    // Fallback - возвращаем как есть
+    return category;
   };
 
   const categoryTitle = getCategoryTitle();

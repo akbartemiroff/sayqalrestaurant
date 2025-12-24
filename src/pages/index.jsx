@@ -18,7 +18,16 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, toggleLanguage } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
+  
+  // Хелпер для трёх языков
+  const t = (ru, uz, en) => {
+    if (language === 'ru') return ru;
+    if (language === 'en') return en;
+    return uz; // uz по умолчанию
+  };
+  
+  // Следующий язык для переключателя (UZ -> RU -> EN -> UZ)
+  const nextLang = { uz: 'RU', ru: 'EN', en: 'UZ' }[language] || 'RU';
   
   // Загрузка блюд из Supabase
   const { menu: supabaseMenu, loading, error } = useMenuGrouped();
@@ -152,7 +161,7 @@ const Home = () => {
                 className="transition-colors duration-300 cursor-pointer text-sayqal-burgundy hover:text-sayqal-gold font-medium"
                 onClick={handleMenuItemClick}
               >
-                {isRussian ? 'Главная' : 'Bosh sahifa'}
+                {t('Главная', 'Bosh sahifa', 'Home')}
               </ScrollLink>
 
               <Link 
@@ -160,7 +169,7 @@ const Home = () => {
                 className="transition-colors duration-300 cursor-pointer text-sayqal-burgundy hover:text-sayqal-gold font-medium"
                 onClick={handleMenuItemClick}
               >
-                {isRussian ? 'Просмотр зала' : 'Zal ko\'rinishi'}
+                {t('Просмотр зала', 'Zal ko\'rinishi', 'View Hall')}
               </Link>
               <ScrollLink 
                 to="contacts" 
@@ -171,7 +180,7 @@ const Home = () => {
                 className="transition-colors duration-300 cursor-pointer text-sayqal-burgundy hover:text-sayqal-gold font-medium"
                 onClick={handleMenuItemClick}
               >
-                {isRussian ? 'Контакты' : 'Bog\'lanish'}
+                {t('Контакты', 'Bog\'lanish', 'Contacts')}
               </ScrollLink>
             </div>
             
@@ -180,9 +189,9 @@ const Home = () => {
               <button 
                 className="h-10 w-10 flex items-center justify-center rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium"
                 onClick={toggleLanguage}
-                aria-label={isRussian ? 'Переключить язык' : 'Tilni o\'zgartirish'}
+                aria-label={t('Сменить язык', 'Tilni o\'zgartirish', 'Change language')}
               >
-                {isRussian ? 'UZ' : 'RU'}
+                {nextLang}
               </button>
 
               {/* Mobile menu button */}
@@ -190,7 +199,7 @@ const Home = () => {
                 <button 
                   className="p-2 focus:outline-none rounded text-sayqal-burgundy" 
                   onClick={toggleMenu}
-                  aria-label={isRussian ? 'Открыть меню' : 'Menyuni ochish'}
+                  aria-label={t('Открыть меню', 'Menyuni ochish', 'Open menu')}
                 >
                   {isMenuOpen ? '✕' : '☰'}
                 </button>
@@ -217,7 +226,7 @@ const Home = () => {
             className="text-sayqal-burgundy hover:text-sayqal-gold transition-colors duration-300 py-2 font-medium"
             onClick={handleMenuItemClick}
           >
-            {isRussian ? 'Главная' : 'Bosh sahifa'}
+            {t('Главная', 'Bosh sahifa', 'Home')}
           </ScrollLink>
 
           <Link
@@ -225,7 +234,7 @@ const Home = () => {
             className="text-sayqal-burgundy hover:text-sayqal-gold transition-colors duration-300 py-2 font-medium"
             onClick={handleMenuItemClick}
           >
-            {isRussian ? 'Просмотр зала' : 'Zal ko\'rinishi'}
+            {t('Просмотр зала', 'Zal ko\'rinishi', 'View Hall')}
           </Link>
           <ScrollLink 
             to="contacts" 
@@ -236,7 +245,7 @@ const Home = () => {
             className="text-sayqal-burgundy hover:text-sayqal-gold transition-colors duration-300 py-2 font-medium"
             onClick={handleMenuItemClick}
           >
-            {isRussian ? 'Контакты' : 'Bog\'lanish'}
+            {t('Контакты', 'Bog\'lanish', 'Contacts')}
           </ScrollLink>
         </div>
       </motion.nav>
@@ -258,7 +267,7 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              {isRussian ? 'Наше Меню' : 'Bizning Menyu'}
+              {t('Наше Меню', 'Bizning Menyu', 'Our Menu')}
             </motion.h2>
 
             {/* Индикатор загрузки */}
@@ -266,7 +275,7 @@ const Home = () => {
               <div className="flex justify-center items-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sayqal-gold"></div>
                 <span className="ml-4 text-sayqal-burgundy font-medium">
-                  {isRussian ? 'Загрузка меню...' : 'Menyu yuklanmoqda...'}
+                  {t('Загрузка меню...', 'Menyu yuklanmoqda...', 'Loading menu...')}
                 </span>
               </div>
             )}
@@ -274,7 +283,7 @@ const Home = () => {
             {/* Сообщение об ошибке */}
             {error && (
               <div className="text-center py-10 text-red-500">
-                <p>{isRussian ? 'Ошибка загрузки меню' : 'Menyu yuklashda xatolik'}</p>
+                <p>{t('Ошибка загрузки меню', 'Menyu yuklashda xatolik', 'Error loading menu')}</p>
                 <p className="text-sm text-gray-500 mt-2">{error}</p>
               </div>
             )}
@@ -343,7 +352,7 @@ const Home = () => {
                       className="text-sayqal-burgundy text-2xl font-bold mb-3 font-playfair relative"
                       whileHover={{ scale: 1.05 }}
                     >
-                      {isRussian ? 'Просмотр зала' : 'Zal ko\'rinishi'}
+                      {t('Просмотр зала', 'Zal ko\'rinishi', 'View Hall')}
                       <motion.div 
                         className="absolute -bottom-2 left-0 right-0 h-0.5 bg-sayqal-gold"
                         initial={{ width: "30%", left: "35%" }}
@@ -358,7 +367,7 @@ const Home = () => {
                       whileHover={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {isRussian ? 'Перейти к просмотру' : 'Ko\'rishga o\'tish'}
+                      {t('Перейти к просмотру', 'Ko\'rishga o\'tish', 'Go to view')}
                     </motion.div>
                   </div>
                   
