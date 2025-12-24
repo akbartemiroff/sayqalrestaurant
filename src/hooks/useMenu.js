@@ -164,49 +164,40 @@ export const CATEGORY_MAP = {
 };
 
 /**
- * Названия категорий на разных языках
+ * Названия категорий на разных языках (UZ, RU, EN)
  * Включает как статические ключи, так и возможные названия из Supabase
  */
 export const CATEGORY_TRANSLATIONS = {
   // Статические категории (из menu.js)
-  salads: { ru: 'Салаты', uz: 'Salatlar' },
-  soups: { ru: 'Первые блюда', uz: 'Birinchi taomlar' },
-  mainDishes: { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar' },
-  main_courses: { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar' },
-  kebabs: { ru: 'Шашлыки', uz: 'Shashliklar' },
-  lunchboxes: { ru: 'Ланчбокс', uz: 'Lanchboks' },
-  sets: { ru: 'Сеты', uz: 'Setlar' },
-  breads: { ru: 'Хлеб', uz: 'Nonlar' },
-  desserts: { ru: 'Десерты', uz: 'Shirinliklar' },
-  drinks: { ru: 'Напитки', uz: 'Ichimliklar' },
-  sauces: { ru: 'Соусы', uz: 'Souslar' },
-  appetizers: { ru: 'Закуски', uz: 'Gazaklar' },
-  other: { ru: 'Другое', uz: 'Boshqa' },
+  salads: { ru: 'Салаты', uz: 'Salatlar', en: 'Salads' },
+  soups: { ru: 'Первые блюда', uz: 'Birinchi taomlar', en: 'First Courses' },
+  mainDishes: { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar', en: 'Main Dishes' },
+  main_courses: { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar', en: 'Main Dishes' },
+  kebabs: { ru: 'Шашлыки', uz: 'Shashliklar', en: 'Kebabs' },
+  lunchboxes: { ru: 'Ланчбокс', uz: 'Lanchboks', en: 'Lunchbox' },
+  sets: { ru: 'Сеты', uz: 'Setlar', en: 'Sets' },
+  breads: { ru: 'Хлеб', uz: 'Nonlar', en: 'Bread' },
+  desserts: { ru: 'Десерты', uz: 'Shirinliklar', en: 'Desserts' },
+  drinks: { ru: 'Напитки', uz: 'Ichimliklar', en: 'Beverages' },
+  sauces: { ru: 'Соусы', uz: 'Souslar', en: 'Sauces' },
+  appetizers: { ru: 'Закуски', uz: 'Gazaklar', en: 'Appetizers' },
+  other: { ru: 'Другое', uz: 'Boshqa', en: 'Other' },
   // Категории на узбекском (из Supabase)
-  'Salatlar': { ru: 'Салаты', uz: 'Salatlar' },
-  'Birinchi taomlar': { ru: 'Первые блюда', uz: 'Birinchi taomlar' },
-  'Ikkinchi taomlar': { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar' },
-  'Shashliklar': { ru: 'Шашлыки', uz: 'Shashliklar' },
-  'Lanchboks': { ru: 'Ланчбокс', uz: 'Lanchboks' },
-  'Lanch boks': { ru: 'Ланчбокс', uz: 'Lanch boks' },
-  'Setlar': { ru: 'Сеты', uz: 'Setlar' },
-  'Souslar': { ru: 'Соусы', uz: 'Souslar' },
-  'Nonlar': { ru: 'Хлеб', uz: 'Nonlar' },
-  'Shirinliklar': { ru: 'Десерты', uz: 'Shirinliklar' },
-  'Ichimliklar': { ru: 'Напитки', uz: 'Ichimliklar' }
+  'Salatlar': { ru: 'Салаты', uz: 'Salatlar', en: 'Salads' },
+  'Birinchi taomlar': { ru: 'Первые блюда', uz: 'Birinchi taomlar', en: 'First Courses' },
+  'Ikkinchi taomlar': { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar', en: 'Main Dishes' },
+  'Shashliklar': { ru: 'Шашлыки', uz: 'Shashliklar', en: 'Kebabs' },
+  'Lanchboks': { ru: 'Ланчбокс', uz: 'Lanchboks', en: 'Lunchbox' },
+  'Lanch boks': { ru: 'Ланчбокс', uz: 'Lanch boks', en: 'Lunchbox' },
+  'Setlar': { ru: 'Сеты', uz: 'Setlar', en: 'Sets' },
+  'Souslar': { ru: 'Соусы', uz: 'Souslar', en: 'Sauces' },
+  'Nonlar': { ru: 'Хлеб', uz: 'Nonlar', en: 'Bread' },
+  'Shirinliklar': { ru: 'Десерты', uz: 'Shirinliklar', en: 'Desserts' },
+  'Ichimliklar': { ru: 'Напитки', uz: 'Ichimliklar', en: 'Beverages' }
 };
 
-/**
- * Получить перевод категории
- * Если категория не найдена в словаре - возвращаем как есть
- */
-export const getCategoryTranslation = (category, language = 'ru') => {
-  if (CATEGORY_TRANSLATIONS[category]) {
-    return CATEGORY_TRANSLATIONS[category][language] || category;
-  }
-  // Для динамических категорий из Supabase возвращаем название как есть
-  return category;
-};
+// Экспортируем getCategoryTranslation из dishService для обратной совместимости
+export { getCategoryTranslation } from '../services/dishService';
 
 /**
  * Ключевые слова для определения категории

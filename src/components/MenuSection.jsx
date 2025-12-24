@@ -1,28 +1,21 @@
 import React from 'react';
 import FoodCard from './FoodCard';
 import { motion } from 'framer-motion';
-import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 import { categoryTranslations } from '../data/menu';
-import { CATEGORY_TRANSLATIONS, getCategoryTranslation } from '../hooks/useMenu';
+import { getCategoryTranslation } from '../services/dishService';
 
 const MenuSection = ({ category, items, onItemClick }) => {
   const { language } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
-  const langKey = isRussian ? 'ru' : 'uz';
 
-  // Поддержка категорий из Supabase и статических категорий
+  // Поддержка категорий из Supabase и статических категорий с тремя языками
   const getCategoryTitle = () => {
     // Сначала пробуем статические переводы из menu.js
-    if (categoryTranslations[category]) {
-      return categoryTranslations[category][langKey];
+    if (categoryTranslations[category] && categoryTranslations[category][language]) {
+      return categoryTranslations[category][language];
     }
-    // Затем пробуем переводы из хука useMenu
-    if (CATEGORY_TRANSLATIONS[category]) {
-      return CATEGORY_TRANSLATIONS[category][langKey];
-    }
-    // Для динамических категорий из Supabase - возвращаем как есть
-    // (название категории уже на понятном языке)
-    return category;
+    // Используем функцию перевода категорий из dishService
+    return getCategoryTranslation(category, language);
   };
 
   const categoryTitle = getCategoryTitle();

@@ -63,18 +63,26 @@ const Home = () => {
     let weightDisplay = '';
     if (dish.weight) {
       const unit = dish.weight_unit || 'g';
-      const unitLabel = unit === 'kg' ? 'кг' : (unit === 'piece' ? 'шт' : 'гр');
-      weightDisplay = `${dish.weight} ${unitLabel}`;
+      const unitLabels = {
+        ru: unit === 'kg' ? 'кг' : (unit === 'piece' ? 'шт' : 'гр'),
+        uz: unit === 'kg' ? 'kg' : (unit === 'piece' ? 'dona' : 'gr'),
+        en: unit === 'kg' ? 'kg' : (unit === 'piece' ? 'pcs' : 'g')
+      };
+      weightDisplay = `${dish.weight} ${unitLabels[language] || unitLabels.uz}`;
     }
 
     return {
       id: dish.id,
-      name_ru: dish.name,
-      name_uz: dish.name_uz || dish.name,
-      name: dish.name, // для совместимости
-      ingredients_ru: dish.description,
-      ingredients_uz: dish.description_uz || dish.description,
-      description: dish.description, // для совместимости
+      // Мультиязычные названия из Supabase
+      name_ru: dish.name_ru || dish.name || '',
+      name_uz: dish.name_uz || dish.name || '',
+      name_en: dish.name_en || dish.name || '',
+      name: dish.name || '', // fallback
+      // Мультиязычные описания из Supabase
+      ingredients_ru: dish.description_ru || dish.description || '',
+      ingredients_uz: dish.description_uz || dish.description || '',
+      ingredients_en: dish.description_en || dish.description || '',
+      description: dish.description || '', // fallback
       weight: weightDisplay,
       price: dish.price,
       // В Supabase используется поле images, не image

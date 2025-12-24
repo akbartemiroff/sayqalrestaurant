@@ -676,39 +676,48 @@ export const sauces = [
 export const categoryTranslations = {
   salads: {
     ru: 'Салаты',
-    uz: 'Salatlar'
+    uz: 'Salatlar',
+    en: 'Salads'
   },
   soups: {
     ru: 'Первые блюда',
-    uz: 'Birinchi taomlar'
+    uz: 'Birinchi taomlar',
+    en: 'First Courses'
   },
   mainDishes: {
     ru: 'Вторые блюда',
-    uz: 'Ikkinchi taomlar'
+    uz: 'Ikkinchi taomlar',
+    en: 'Main Dishes'
   },
   kebabs: {
     ru: 'Шашлыки',
-    uz: 'Shashliklar'
+    uz: 'Shashliklar',
+    en: 'Kebabs'
   },
   lunchboxes: {
     ru: 'Ланчбокс',
-    uz: 'Lanchboks'
+    uz: 'Lanchboks',
+    en: 'Lunchbox'
   },
   sets: {
     ru: 'Сеты',
-    uz: 'Setlar'
+    uz: 'Setlar',
+    en: 'Sets'
   },
   breads: {
     ru: 'Хлеб',
-    uz: 'Nonlar'
+    uz: 'Nonlar',
+    en: 'Bread'
   },
   desserts: {
     ru: 'Десерты',
-    uz: 'Shirinliklar'
+    uz: 'Shirinliklar',
+    en: 'Desserts'
   },
   sauces: {
     ru: 'Соусы',
-    uz: 'Souslar'
+    uz: 'Souslar',
+    en: 'Sauces'
   }
 };
 

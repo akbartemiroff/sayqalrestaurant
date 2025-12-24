@@ -170,12 +170,62 @@ export const subscribeToDisheChanges = (callback) => {
   };
 };
 
+/**
+ * Получить перевод категории на указанный язык
+ * @param {string} categoryName - оригинальное название категории из Supabase
+ * @param {string} language - код языка (ru, uz, en)
+ * @returns {string} - переведённое название
+ */
+export const getCategoryTranslation = (categoryName, language = 'uz') => {
+  if (!categoryName) return '';
+  
+  const lowerName = categoryName.toLowerCase();
+  
+  // Переводы категорий
+  const translations = {
+    salads: { ru: 'Салаты', uz: 'Salatlar', en: 'Salads' },
+    soups: { ru: 'Первые блюда', uz: 'Birinchi taomlar', en: 'First Courses' },
+    mainDishes: { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar', en: 'Main Dishes' },
+    kebabs: { ru: 'Шашлыки', uz: 'Shashliklar', en: 'Kebabs' },
+    lunchboxes: { ru: 'Ланчбокс', uz: 'Lanchboks', en: 'Lunchbox' },
+    sets: { ru: 'Сеты', uz: 'Setlar', en: 'Sets' },
+    sauces: { ru: 'Соусы', uz: 'Souslar', en: 'Sauces' },
+    breads: { ru: 'Хлеб', uz: 'Non', en: 'Bread' },
+    desserts: { ru: 'Десерты', uz: 'Desertlar', en: 'Desserts' },
+    beverages: { ru: 'Напитки', uz: 'Ichimliklar', en: 'Beverages' }
+  };
+  
+  // Ищем соответствие по ключевым словам
+  const categoryKeys = [
+    { key: 'salads', patterns: ['salat', 'салат', 'salad'] },
+    { key: 'soups', patterns: ['birinchi', 'первы', 'soup', 'суп', 'first'] },
+    { key: 'mainDishes', patterns: ['ikkinchi', 'втор', 'main', 'second'] },
+    { key: 'kebabs', patterns: ['shashlik', 'шашлык', 'kebab', 'kabob'] },
+    { key: 'lunchboxes', patterns: ['lanch', 'ланч', 'lunch'] },
+    { key: 'sets', patterns: ['set', 'сет'] },
+    { key: 'sauces', patterns: ['sous', 'соус', 'sauce'] },
+    { key: 'breads', patterns: ['non', 'хлеб', 'bread'] },
+    { key: 'desserts', patterns: ['desert', 'десерт', 'dessert'] },
+    { key: 'beverages', patterns: ['ichimlik', 'напит', 'beverage', 'drink'] }
+  ];
+  
+  for (const { key, patterns } of categoryKeys) {
+    if (patterns.some(pattern => lowerName.includes(pattern))) {
+      return translations[key][language] || translations[key].uz;
+    }
+  }
+  
+  // Возвращаем оригинальное название, если перевод не найден
+  return categoryName;
+};
+
 export default {
   getAllDishes,
   getDishesByCategory,
   getDishById,
   getAllCategories,
   getDishesGroupedByCategory,
-  subscribeToDisheChanges
+  subscribeToDisheChanges,
+  getCategoryTranslation
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedWeight } from '../data/menu';
 import { isImageCached, preloadImage } from '../utils/imagePreloader';
 import { getImagePath, PLACEHOLDER_IMAGE } from '../utils/paths';
@@ -20,41 +20,66 @@ const CARD_VARIANTS = {
 // Мемоизированный компонент для предотвращения лишних рендеров
 const FoodCard = React.memo(({ item, onClick }) => {
   const { language } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
   const [imageLoaded, setImageLoaded] = useState(isImageCached(item?.image || PLACEHOLDER_IMAGE));
   const [imageError, setImageError] = useState(false);
 
   // Сокращаем количество проверок через оптимизированные геттеры
-  const isSet = Boolean(item.persons_ru || item.persons);
+  const isSet = Boolean(item.persons_ru || item.persons || item.persons_uz || item.persons_en);
   
   // Мемоизируем данные, чтобы избежать перерасчетов
-  // Поддержка данных из Supabase (name вместо name_ru) и статических данных
-  const itemData = useMemo(() => ({
-    persons: isRussian 
-      ? (item.persons_ru || item.persons || "") 
-      : (item.persons_uz || item.persons || ""),
-    portions: isRussian 
-      ? (item.portions_ru || item.portions || "") 
-      : (item.portions_uz || item.portions || ""),
-    weight: !isRussian && item.weight_uz 
-      ? item.weight_uz 
-      : getLocalizedWeight(item.weight, language),
-    // Поддержка Supabase (name) и статических данных (name_ru/name_uz)
-    name: isRussian 
-      ? (item.name_ru || item.name || "") 
-      : (item.name_uz || item.name || ""),
-    // Поддержка Supabase (description) и статических данных (ingredients_ru/ingredients_uz)
-    ingredients: isRussian 
-      ? (item.ingredients_ru || item.description || "") 
-      : (item.ingredients_uz || item.description_uz || item.description || ""),
-    items: isRussian ? item.items_ru : item.items_uz,
-    price: item.price,
-    // Поддержка разных полей для изображений
-    imagePath: getImagePath(item?.image || item?.images) || PLACEHOLDER_IMAGE,
-    specialLabel: item.new 
-      ? (isRussian ? 'Новинка' : 'Yangi') 
-      : (isRussian ? 'Особое' : 'Maxsus')
-  }), [item, isRussian, language]);
+  // Поддержка данных из Supabase с тремя языками (en, uz, ru)
+  const itemData = useMemo(() => {
+    // Получить значение по текущему языку
+    const getByLang = (ruVal, uzVal, enVal, fallback = '') => {
+      if (language === 'ru') return ruVal || fallback;
+      if (language === 'en') return enVal || fallback;
+      return uzVal || fallback; // uz по умолчанию
+    };
+
+    // Метки для специальных предложений
+    const specialLabels = {
+      ru: item.new ? 'Новинка' : 'Особое',
+      uz: item.new ? 'Yangi' : 'Maxsus',
+      en: item.new ? 'New' : 'Special'
+    };
+
+    return {
+      persons: getByLang(
+        item.persons_ru || item.persons,
+        item.persons_uz || item.persons,
+        item.persons_en || item.persons,
+        ""
+      ),
+      portions: getByLang(
+        item.portions_ru || item.portions,
+        item.portions_uz || item.portions,
+        item.portions_en || item.portions,
+        ""
+      ),
+      weight: item.weight_uz && language === 'uz' 
+        ? item.weight_uz 
+        : getLocalizedWeight(item.weight, language),
+      // Мультиязычные названия
+      name: getByLang(
+        item.name_ru || item.name,
+        item.name_uz || item.name,
+        item.name_en || item.name,
+        item.name || ""
+      ),
+      // Мультиязычные описания/ингредиенты
+      ingredients: getByLang(
+        item.ingredients_ru || item.description_ru || item.description,
+        item.ingredients_uz || item.description_uz || item.description,
+        item.ingredients_en || item.description_en || item.description,
+        item.description || ""
+      ),
+      items: getByLang(item.items_ru, item.items_uz, item.items_en),
+      price: item.price,
+      // Поддержка разных полей для изображений
+      imagePath: getImagePath(item?.image || item?.images) || PLACEHOLDER_IMAGE,
+      specialLabel: specialLabels[language] || specialLabels.uz
+    };
+  }, [item, language]);
   
   // Предзагрузка изображения с оптимизацией
   useEffect(() => {
@@ -110,9 +135,7 @@ const FoodCard = React.memo(({ item, onClick }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                 </svg>
-                {isRussian 
-                  ? `${itemData.persons} чел.` 
-                  : `${itemData.persons} kishi`}
+                {`${itemData.persons} ${{ ru: 'чел.', uz: 'kishi', en: 'pers.' }[language] || 'kishi'}`}
               </span>
             ) : (
               <span className="flex items-center gap-1 font-bold">
@@ -144,7 +167,7 @@ const FoodCard = React.memo(({ item, onClick }) => {
         
         {isSet ? (
           <div className="text-sm text-gray-600 max-h-24 overflow-y-auto flex-grow">
-            <p className="font-semibold mb-1 text-sayqal-burgundy/80">{isRussian ? 'Состав:' : 'Tarkib:'}</p>
+            <p className="font-semibold mb-1 text-sayqal-burgundy/80">{{ ru: 'Состав:', uz: 'Tarkib:', en: 'Contents:' }[language] || 'Tarkib:'}</p>
             <ul className="list-disc pl-4">
               {itemData.items && itemData.items.slice(0, 3).map((listItem, index) => (
                 <li key={index} className="mb-1 leading-tight">
@@ -172,7 +195,7 @@ const FoodCard = React.memo(({ item, onClick }) => {
           
           {/* Индикатор с минимальной анимацией */}
           <div className="text-sayqal-gold text-xs flex items-center font-medium bg-sayqal-cream/30 px-3 py-1 rounded-full">
-            <span className="mr-1">{isRussian ? 'Подробнее' : 'Batafsil'}</span>
+            <span className="mr-1">{{ ru: 'Подробнее', uz: 'Batafsil', en: 'Details' }[language] || 'Batafsil'}</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>

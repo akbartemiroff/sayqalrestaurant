@@ -63,8 +63,17 @@ const activeItemVariants = {
 
 const Navbar = () => {
   const { language, toggleLanguage } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
   const [scrolled, setScrolled] = useState(false);
+  
+  // Хелпер для получения значения по языку
+  const t = (ru, uz, en) => {
+    if (language === 'ru') return ru;
+    if (language === 'en') return en;
+    return uz;
+  };
+  
+  // Следующий язык для переключателя
+  const nextLang = { uz: 'RU', ru: 'EN', en: 'UZ' }[language] || 'RU';
   const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -142,24 +151,24 @@ const Navbar = () => {
     return location.pathname.startsWith(path);
   }, [location]);
 
-  // Mемоизированные пункты меню
+  // Mемоизированные пункты меню с поддержкой 3х языков
   const menuItems = React.useMemo(() => [
-    { id: 'salads', name: isRussian ? categoryTranslations.salads.ru : categoryTranslations.salads.uz },
-    { id: 'soups', name: isRussian ? categoryTranslations.soups.ru : categoryTranslations.soups.uz },
-    { id: 'mainDishes', name: isRussian ? categoryTranslations.mainDishes.ru : categoryTranslations.mainDishes.uz },
-    { id: 'kebabs', name: isRussian ? categoryTranslations.kebabs.ru : categoryTranslations.kebabs.uz },
-    { id: 'lunchboxes', name: isRussian ? categoryTranslations.lunchboxes.ru : categoryTranslations.lunchboxes.uz },
-    { id: 'sets', name: isRussian ? categoryTranslations.sets.ru : categoryTranslations.sets.uz },
-    { id: 'breads', name: isRussian ? categoryTranslations.breads.ru : categoryTranslations.breads.uz },
-    { id: 'desserts', name: isRussian ? categoryTranslations.desserts.ru : categoryTranslations.desserts.uz },
-    { id: 'sauces', name: isRussian ? categoryTranslations.sauces.ru : categoryTranslations.sauces.uz },
-  ], [isRussian]);
+    { id: 'salads', name: categoryTranslations.salads[language] || categoryTranslations.salads.uz },
+    { id: 'soups', name: categoryTranslations.soups[language] || categoryTranslations.soups.uz },
+    { id: 'mainDishes', name: categoryTranslations.mainDishes[language] || categoryTranslations.mainDishes.uz },
+    { id: 'kebabs', name: categoryTranslations.kebabs[language] || categoryTranslations.kebabs.uz },
+    { id: 'lunchboxes', name: categoryTranslations.lunchboxes[language] || categoryTranslations.lunchboxes.uz },
+    { id: 'sets', name: categoryTranslations.sets[language] || categoryTranslations.sets.uz },
+    { id: 'breads', name: categoryTranslations.breads[language] || categoryTranslations.breads.uz },
+    { id: 'desserts', name: categoryTranslations.desserts[language] || categoryTranslations.desserts.uz },
+    { id: 'sauces', name: categoryTranslations.sauces[language] || categoryTranslations.sauces.uz },
+  ], [language]);
 
   const mainNavItems = React.useMemo(() => [
-    { id: 'home', name: isRussian ? 'Главная' : 'Bosh sahifa', hasDropdown: false, path: '/' },
-    { id: 'about', name: isRussian ? 'Просмотр зала' : 'Zal ko\'rinishi', hasDropdown: false, path: '/about' },
-    { id: 'contacts', name: isRussian ? 'Контакты' : 'Bog\'lanish', hasDropdown: false, path: '/#contacts' }
-  ], [isRussian, isActive]);
+    { id: 'home', name: t('Главная', 'Bosh sahifa', 'Home'), hasDropdown: false, path: '/' },
+    { id: 'about', name: t('Просмотр зала', 'Zal ko\'rinishi', 'View Hall'), hasDropdown: false, path: '/about' },
+    { id: 'contacts', name: t('Контакты', 'Bog\'lanish', 'Contacts'), hasDropdown: false, path: '/#contacts' }
+  ], [language, isActive]);
 
   return (
     <>
@@ -219,7 +228,7 @@ const Navbar = () => {
                     <button
                       onClick={toggleDropdown}
                       className="nav-link flex items-center cursor-pointer text-sayqal-burgundy hover:text-sayqal-gold font-medium px-3 py-2"
-                      title={isRussian ? "Нажмите, чтобы увидеть разделы меню" : "Menyu bo'limlarini ko'rish uchun bosing"}
+                      title={t("Нажмите, чтобы увидеть разделы меню", "Menyu bo'limlarini ko'rish uchun bosing", "Click to see menu sections")}
                     >
                       {item.name}
                       <motion.svg 
@@ -258,7 +267,7 @@ const Navbar = () => {
                                 data-category={subItem.id}
                                 onClick={(e) => {
                                   // Преобразуем название категории в ID если нужно
-                                  const categoryId = isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id);
+                                  const categoryId = subItem.id;
                                   
                                   console.log('Clicking on category:', subItem.id, subItem.name);
                                   console.log('Using categoryId:', categoryId);
@@ -327,11 +336,11 @@ const Navbar = () => {
                             ) : (
                               <RouterLink
                                 key={subItem.id}
-                                to={`/#${isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id)}`}
+                                to={`/#${subItem.id}`}
                                 data-category={subItem.id}
                                 onClick={() => {
                                   // Преобразуем название категории в ID если нужно
-                                  const categoryId = isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id);
+                                  const categoryId = subItem.id;
                                   console.log('Clicking on category (different page):', subItem.id, subItem.name);
                                   console.log('Using categoryId for navigation:', categoryId);
                                   setMenuDropdownOpen(false);
@@ -409,11 +418,11 @@ const Navbar = () => {
               <motion.button
                 onClick={handleLanguageToggle}
                 className="h-9 px-3 rounded-full border-2 transition-all border-sayqal-gold text-sayqal-burgundy hover:bg-sayqal-gold hover:text-white font-medium"
-                aria-label={isRussian ? "Переключить на узбекский" : "Ruschaga o'tish"}
+                aria-label={t("Сменить язык", "Tilni o'zgartirish", "Change language")}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {isRussian ? 'UZ' : 'RU'}
+                {nextLang}
               </motion.button>
               
               {/* Мобильное меню - улучшенная кнопка */}
@@ -471,7 +480,7 @@ const Navbar = () => {
                     <button
                       onClick={toggleDropdown}
                       className="text-sayqal-burgundy text-xl py-3 border-b border-sayqal-burgundy/10 flex items-center justify-between w-full px-4"
-                      title={isRussian ? "Нажмите, чтобы увидеть разделы меню" : "Menyu bo'limlarini ko'rish uchun bosing"}
+                      title={t("Нажмите, чтобы увидеть разделы меню", "Menyu bo'limlarini ko'rish uchun bosing", "Click to see menu sections")}
                     >
                       <span>{item.name}</span>
                       <motion.svg 
@@ -508,7 +517,7 @@ const Navbar = () => {
                                 data-category={subItem.id}
                                 onClick={(e) => {
                                   // Преобразуем название категории в ID если нужно
-                                  const categoryId = isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id);
+                                  const categoryId = subItem.id;
                                   
                                   console.log('Clicking on category:', subItem.id, subItem.name);
                                   console.log('Using categoryId:', categoryId);
@@ -577,11 +586,11 @@ const Navbar = () => {
                             ) : (
                               <RouterLink
                                 key={subItem.id}
-                                to={`/#${isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id)}`}
+                                to={`/#${subItem.id}`}
                                 data-category={subItem.id}
                                 onClick={() => {
                                   // Преобразуем название категории в ID если нужно
-                                  const categoryId = isRussian ? subItem.id : (uzCategoryMappings[subItem.name] || subItem.id);
+                                  const categoryId = subItem.id;
                                   console.log('Clicking on category (different page):', subItem.id, subItem.name);
                                   console.log('Using categoryId for navigation:', categoryId);
                                   setMenuDropdownOpen(false);
