@@ -76,7 +76,8 @@ const FoodCard = React.memo(({ item, onClick }) => {
           src={imageError ? PLACEHOLDER_IMAGE : itemData.imagePath} 
           alt={itemData.name}
           className="w-full h-full object-cover"
-          loading="lazy"
+          loading="eager"
+          decoding="async"
           onError={() => setImageError(true)}
         />
         
