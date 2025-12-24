@@ -181,8 +181,19 @@ export const CATEGORY_TRANSLATIONS = {
   drinks: { ru: 'Напитки', uz: 'Ichimliklar' },
   sauces: { ru: 'Соусы', uz: 'Souslar' },
   appetizers: { ru: 'Закуски', uz: 'Gazaklar' },
-  // Категории из Supabase (динамические - используем как есть)
-  other: { ru: 'Другое', uz: 'Boshqa' }
+  other: { ru: 'Другое', uz: 'Boshqa' },
+  // Категории на узбекском (из Supabase)
+  'Salatlar': { ru: 'Салаты', uz: 'Salatlar' },
+  'Birinchi taomlar': { ru: 'Первые блюда', uz: 'Birinchi taomlar' },
+  'Ikkinchi taomlar': { ru: 'Вторые блюда', uz: 'Ikkinchi taomlar' },
+  'Shashliklar': { ru: 'Шашлыки', uz: 'Shashliklar' },
+  'Lanchboks': { ru: 'Ланчбокс', uz: 'Lanchboks' },
+  'Lanch boks': { ru: 'Ланчбокс', uz: 'Lanch boks' },
+  'Setlar': { ru: 'Сеты', uz: 'Setlar' },
+  'Souslar': { ru: 'Соусы', uz: 'Souslar' },
+  'Nonlar': { ru: 'Хлеб', uz: 'Nonlar' },
+  'Shirinliklar': { ru: 'Десерты', uz: 'Shirinliklar' },
+  'Ichimliklar': { ru: 'Напитки', uz: 'Ichimliklar' }
 };
 
 /**

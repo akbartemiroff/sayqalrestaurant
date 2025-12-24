@@ -47,3 +47,4 @@ export default {
   PLACEHOLDER_IMAGE
 };
 
+
