@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { IoMdClose } from 'react-icons/io';
 import { getLocalizedWeight } from '../data/menu';
 import { getImagePath, PLACEHOLDER_IMAGE } from '../utils/paths';
+import { getModalImageUrl } from '../utils/imageOptimizer';
 
 const ModalDish = ({ isOpen, onClose, dish }) => {
   const { language } = useLanguage();
@@ -114,8 +115,11 @@ const ModalDish = ({ isOpen, onClose, dish }) => {
                 </button>
               </div>
               
-              {/* Основное изображение блюда */}
-              <img loading="lazy" src={getImagePath(dish?.image || dish?.images) || PLACEHOLDER_IMAGE}
+              {/* Основное изображение блюда с оптимизацией */}
+              <img 
+                loading="lazy" 
+                decoding="async"
+                src={getModalImageUrl(getImagePath(dish?.image || dish?.images)) || PLACEHOLDER_IMAGE}
                 alt={getName()}
                 className="w-full h-72 sm:h-96 object-cover"
                 onError={(e) => {

@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedWeight } from '../data/menu';
 import { isImageCached, preloadImage } from '../utils/imagePreloader';
 import { getImagePath, PLACEHOLDER_IMAGE } from '../utils/paths';
+import { useInView } from 'react-intersection-observer';
+import { getCardImageUrl } from '../utils/imageOptimizer';
 
 // Минимизированные варианты анимации для лучшей производительности
 const CARD_VARIANTS = {
@@ -20,8 +22,15 @@ const CARD_VARIANTS = {
 // Мемоизированный компонент для предотвращения лишних рендеров
 const FoodCard = React.memo(({ item, onClick }) => {
   const { language } = useLanguage();
-  const [imageLoaded, setImageLoaded] = useState(isImageCached(item?.image || PLACEHOLDER_IMAGE));
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  
+  // Intersection Observer для lazy loading - загружаем изображение только когда карточка видна
+  const { ref: cardRef, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '100px' // Предзагрузка за 100px до появления в viewport
+  });
 
   // Сокращаем количество проверок через оптимизированные геттеры
   const isSet = Boolean(item.persons_ru || item.persons || item.persons_uz || item.persons_en);
@@ -75,15 +84,15 @@ const FoodCard = React.memo(({ item, onClick }) => {
       ),
       items: getByLang(item.items_ru, item.items_uz, item.items_en),
       price: item.price,
-      // Поддержка разных полей для изображений
-      imagePath: getImagePath(item?.image || item?.images) || PLACEHOLDER_IMAGE,
+      // Поддержка разных полей для изображений с оптимизацией
+      imagePath: getCardImageUrl(getImagePath(item?.image || item?.images)) || PLACEHOLDER_IMAGE,
       specialLabel: specialLabels[language] || specialLabels.uz
     };
   }, [item, language]);
   
-  // Предзагрузка изображения с оптимизацией
+  // Предзагрузка изображения только когда карточка видна в viewport
   useEffect(() => {
-    if (imageLoaded) return;
+    if (!inView || imageLoaded || imageError) return;
     
     let isMounted = true;
     const loadImage = async () => {
@@ -97,31 +106,37 @@ const FoodCard = React.memo(({ item, onClick }) => {
     
     loadImage();
     return () => { isMounted = false; };
-  }, [itemData.imagePath, imageLoaded]);
+  }, [itemData.imagePath, imageLoaded, imageError, inView]);
 
   return (
     <div
+      ref={cardRef}
       className="overflow-hidden rounded-xl shadow-sm bg-white h-full flex flex-col cursor-pointer food-card"
       onClick={() => onClick(item)}
       style={{ border: '1px solid rgba(150, 69, 60, 0.05)' }}
     >
       {/* Image Container с оптимизированной загрузкой */}
-      <div className="relative aspect-video overflow-hidden">
-        {/* Используем обычный img вместо motion.img для быстрой загрузки */}
-        <img 
-          src={imageError ? PLACEHOLDER_IMAGE : itemData.imagePath} 
-          alt={itemData.name}
-          className="w-full h-full object-cover"
-          loading="lazy" 
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageError(true)}
-        />
-        
-        {/* Плейсхолдер с упрощенной анимацией */}
+      <div className="relative aspect-video overflow-hidden bg-gray-100">
+        {/* Skeleton placeholder - показывается пока изображение не загружено */}
         {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
+            <svg className="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
           </div>
+        )}
+        
+        {/* Загружаем изображение только когда карточка видна */}
+        {inView && (
+          <img 
+            src={imageError ? PLACEHOLDER_IMAGE : itemData.imagePath} 
+            alt={itemData.name}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+          />
         )}
         
         {/* Упрощенный градиент */}

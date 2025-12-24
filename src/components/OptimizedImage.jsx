@@ -2,6 +2,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { preloadImage, isImageCached } from '../utils/imagePreloader';
 import ensureImagePath from '../utils/ensureImagePath';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * Оптимизированный компонент изображений с улучшенной производительностью
@@ -17,6 +18,13 @@ const OptimizedImage = memo(({
   animate = true,
   ...props
 }) => {
+  // Intersection Observer для lazy loading
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '150px' // Предзагрузка за 150px до появления
+  });
+  
   // Ensure paths are correctly formatted
   const formattedSrc = ensureImagePath(src);
   const formattedFallback = ensureImagePath(fallbackSrc);
@@ -24,6 +32,7 @@ const OptimizedImage = memo(({
   const [loaded, setLoaded] = useState(isImageCached(formattedSrc));
   const [error, setError] = useState(false);
   const [imageSrc, setImageSrc] = useState(formattedSrc);
+  const [shouldLoad, setShouldLoad] = useState(priority); // Высокоприоритетные загружаем сразу
   
   // Сбрасываем состояние при изменении источника изображения
   useEffect(() => {
@@ -32,9 +41,16 @@ const OptimizedImage = memo(({
     setError(false);
   }, [formattedSrc]);
   
+  // Начинаем загрузку когда изображение видно в viewport
   useEffect(() => {
-    // Если изображение уже загружено или произошла ошибка, ничего не делаем
-    if (loaded || error) return;
+    if (inView && !shouldLoad) {
+      setShouldLoad(true);
+    }
+  }, [inView, shouldLoad]);
+  
+  useEffect(() => {
+    // Если изображение уже загружено, произошла ошибка, или ещё не пора загружать - ничего не делаем
+    if (loaded || error || !shouldLoad) return;
     
     // Предотвращаем утечки памяти при размонтировании
     let isMounted = true;
@@ -52,29 +68,22 @@ const OptimizedImage = memo(({
         }
       };
     } else {
-      // Низкоприоритетная загрузка с небольшой задержкой
-      const timer = setTimeout(() => {
-        preloadImage(formattedSrc)
-          .then(() => isMounted && setLoaded(true))
-          .catch((err) => {
-            if (isMounted) {
-              console.error(`Ошибка загрузки изображения: ${formattedSrc}`, err);
-              setError(true);
-              setImageSrc(formattedFallback);
-            }
-          });
-      }, priority ? 0 : 100);
-      
-      return () => {
-        clearTimeout(timer);
-        isMounted = false;
-      };
+      // Низкоприоритетная загрузка
+      preloadImage(formattedSrc)
+        .then(() => isMounted && setLoaded(true))
+        .catch((err) => {
+          if (isMounted) {
+            console.error(`Ошибка загрузки изображения: ${formattedSrc}`, err);
+            setError(true);
+            setImageSrc(formattedFallback);
+          }
+        });
     }
     
     return () => {
       isMounted = false;
     };
-  }, [formattedSrc, formattedFallback, priority, loaded, error]);
+  }, [formattedSrc, formattedFallback, priority, loaded, error, shouldLoad]);
   
   // Упрощенный обработчик ошибки загрузки изображения
   const handleError = () => {
@@ -83,13 +92,15 @@ const OptimizedImage = memo(({
     console.warn(`Image failed to load: ${formattedSrc}, using fallback: ${formattedFallback}`);
   };
   
-  // Упрощенный плейсхолдер для состояния загрузки
+  // Skeleton placeholder для состояния загрузки
   const renderPlaceholder = () => {
     if (loaded) return null;
     
     return (
-      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full bg-gray-200" />
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse flex items-center justify-center">
+        <svg className="w-10 h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
       </div>
     );
   };
@@ -97,6 +108,7 @@ const OptimizedImage = memo(({
   // Рендерим различные варианты изображения в зависимости от настроек
   return (
     <div 
+      ref={ref}
       className={`relative overflow-hidden ${className}`} 
       style={{ width, height }}
     >
@@ -112,38 +124,36 @@ const OptimizedImage = memo(({
         </div>
       )}
       
-      {/* Изображение - используем motion только если нужна анимация */}
-      {animate ? (
-        <motion.img
-          src={imageSrc}
-          alt={alt}
-          className={`w-full h-full object-cover transition-opacity duration-150 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          loading={priority ? 'eager' : 'lazy'}
-          width={width}
-          height={height}
-          onError={handleError}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: loaded ? 1 : 0 }}
-          transition={{ duration: 0.15 }}
-          {...props}
-        />
-      ) : (
-        <picture>
-          <source 
-            srcSet={formattedSrc.endsWith('.webp') ? formattedSrc : formattedSrc.replace(/\.(jpe?g|png)$/, '.webp')} 
-            type="image/webp" 
+      {/* Изображение - загружаем только когда shouldLoad=true */}
+      {shouldLoad && (
+        animate ? (
+          <motion.img
+            src={imageSrc}
+            alt={alt}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            width={width}
+            height={height}
+            onError={handleError}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: loaded ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            {...props}
           />
+        ) : (
           <img 
             src={imageSrc}
             alt={alt}
-            className={`w-full h-full object-cover transition-opacity duration-150 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
             loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
             width={width}
             height={height}
             onError={handleError}
             {...props}
           />
-        </picture>
+        )
       )}
     </div>
   );
