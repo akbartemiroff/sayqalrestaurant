@@ -1,12 +1,18 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
 import '../styles/Hero.css';
 
 const HeroSection = () => {
   const { language } = useLanguage();
-  const isRussian = language === LANGUAGES.RU;
+  
+  // Хелпер для трёх языков
+  const t = (ru, uz, en) => {
+    if (language === 'ru') return ru;
+    if (language === 'en') return en;
+    return uz;
+  };
   
   const scrollToMenu = () => {
     const menuSection = document.querySelector(".menu-container");
@@ -27,6 +33,13 @@ const HeroSection = () => {
     backgroundAttachment: 'fixed',
   };
 
+  // Тексты для Hero секции
+  const heroTitle = {
+    ru: <>Вас ждёт<br />узбекское<br />гостеприимство...</>,
+    uz: <>Sizni o'zbekona<br />mehmondo'stlik<br />kutmoqda...</>,
+    en: <>Uzbek hospitality<br />awaits you...</>
+  };
+
   return (
     <section 
       className="relative min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-20"
@@ -42,19 +55,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-8 drop-shadow-lg"
         >
-          {isRussian ? (
-            <>
-              Вас ждёт<br />
-              узбекское<br />
-              гостеприимство...
-            </>
-          ) : (
-            <>
-              Sizni o'zbekona<br />
-              mehmondo'stlik<br />
-              kutmoqda...
-            </>
-          )}
+          {heroTitle[language] || heroTitle.uz}
         </motion.h1>
 
         <motion.div
@@ -67,14 +68,14 @@ const HeroSection = () => {
             onClick={scrollToMenu}
             className="bg-sayqal-gold hover:bg-sayqal-gold/90 text-sayqal-burgundy font-medium rounded-xl px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl"
           >
-            {isRussian ? 'Посмотреть меню' : 'Menyuni ko\'rish'}
+            {t('Посмотреть меню', 'Menyuni ko\'rish', 'View Menu')}
           </button>
           
           <Link 
             to="/about" 
             className="bg-sayqal-burgundy hover:bg-sayqal-burgundy/90 text-sayqal-gold font-medium rounded-xl px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:shadow-xl text-center"
           >
-            {isRussian ? 'Просмотр залов' : 'Zallarni ko\'rish'}
+            {t('Просмотр залов', 'Zallarni ko\'rish', 'View Halls')}
           </Link>
         </motion.div>
       </div>
@@ -99,4 +100,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection; 
+export default HeroSection;

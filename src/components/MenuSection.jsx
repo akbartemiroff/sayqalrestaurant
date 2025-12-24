@@ -7,8 +7,8 @@ import { useLanguage } from '../context/LanguageContext';
 const ALL_CATEGORY_TRANSLATIONS = {
   // Английские названия
   'Salads': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
-  'First Courses': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
-  'Main Dishes': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'First Courses': { uz: 'Birinchi ovqat', ru: 'Первые блюда', en: 'First Courses' },
+  'Main Dishes': { uz: 'Ikkinchi ovqat', ru: 'Вторые блюда', en: 'Main Dishes' },
   'Kebabs': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
   'Lunchbox': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
   'Sets': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
@@ -16,13 +16,16 @@ const ALL_CATEGORY_TRANSLATIONS = {
   'Bread': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
   'Desserts': { uz: 'Desertlar', ru: 'Десерты', en: 'Desserts' },
   'Beverages': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
-  // Узбекские названия
+  // Узбекские названия - варианты из Supabase
   'Salatlar': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
+  'Birinchi ovqat': { uz: 'Birinchi ovqat', ru: 'Первые блюда', en: 'First Courses' },
   'Birinchi taomlar': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
+  'Ikkinchi ovqat': { uz: 'Ikkinchi ovqat', ru: 'Вторые блюда', en: 'Main Dishes' },
   'Ikkinchi taomlar': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
   'Shashliklar': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
+  'Kabob': { uz: 'Kabob', ru: 'Шашлыки', en: 'Kebabs' },
   'Lanchboks': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
-  'Lanch boks': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
+  'Lanch boks': { uz: 'Lanch boks', ru: 'Ланчбокс', en: 'Lunchbox' },
   'Setlar': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
   'Souslar': { uz: 'Souslar', ru: 'Соусы', en: 'Sauces' },
   'Non': { uz: 'Non', ru: 'Хлеб', en: 'Bread' },
@@ -32,8 +35,8 @@ const ALL_CATEGORY_TRANSLATIONS = {
   'Ichimliklar': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
   // Русские названия
   'Салаты': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
-  'Первые блюда': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
-  'Вторые блюда': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'Первые блюда': { uz: 'Birinchi ovqat', ru: 'Первые блюда', en: 'First Courses' },
+  'Вторые блюда': { uz: 'Ikkinchi ovqat', ru: 'Вторые блюда', en: 'Main Dishes' },
   'Шашлыки': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
   'Ланчбокс': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
   'Сеты': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
@@ -43,8 +46,8 @@ const ALL_CATEGORY_TRANSLATIONS = {
   'Напитки': { uz: 'Ichimliklar', ru: 'Напитки', en: 'Beverages' },
   // Статические ключи (из menu.js)
   'salads': { uz: 'Salatlar', ru: 'Салаты', en: 'Salads' },
-  'soups': { uz: 'Birinchi taomlar', ru: 'Первые блюда', en: 'First Courses' },
-  'mainDishes': { uz: 'Ikkinchi taomlar', ru: 'Вторые блюда', en: 'Main Dishes' },
+  'soups': { uz: 'Birinchi ovqat', ru: 'Первые блюда', en: 'First Courses' },
+  'mainDishes': { uz: 'Ikkinchi ovqat', ru: 'Вторые блюда', en: 'Main Dishes' },
   'kebabs': { uz: 'Shashliklar', ru: 'Шашлыки', en: 'Kebabs' },
   'lunchboxes': { uz: 'Lanchboks', ru: 'Ланчбокс', en: 'Lunchbox' },
   'sets': { uz: 'Setlar', ru: 'Сеты', en: 'Sets' },
