@@ -87,3 +87,4 @@ export const getLocalizedField = (obj, field, language) => {
 
 export default { UI_TRANSLATIONS, t, getLocalizedField };
 
+

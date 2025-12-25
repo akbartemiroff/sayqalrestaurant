@@ -116,43 +116,23 @@ const FoodCard = React.memo(({ item, onClick }) => {
         )}
       </div>
       
-      {/* Информация о блюде */}
-      <div className="p-4 relative flex-grow flex flex-col">
-        <h3 className="font-playfair font-bold text-lg mb-2 text-sayqal-burgundy">
+      {/* Информация о блюде - компактный вид */}
+      <div className="p-3 relative flex-grow flex flex-col">
+        <h3 className="font-playfair font-bold text-base mb-2 text-sayqal-burgundy line-clamp-1">
           {itemData.name}
         </h3>
-        
-        {isSet ? (
-          <div className="text-sm text-gray-600 max-h-24 overflow-y-auto flex-grow">
-            <p className="font-semibold mb-1 text-sayqal-burgundy/80">{{ ru: 'Состав:', uz: 'Tarkib:', en: 'Contents:' }[language] || 'Tarkib:'}</p>
-            <ul className="list-disc pl-4">
-              {itemData.items && itemData.items.slice(0, 3).map((listItem, index) => (
-                <li key={index} className="mb-1 leading-tight">
-                  {listItem}
-                </li>
-              ))}
-              {itemData.items && itemData.items.length > 3 && (
-                <li className="text-sayqal-gold">...</li>
-              )}
-            </ul>
-          </div>
-        ) : (
-          <p className="text-sm text-gray-600 line-clamp-3 leading-tight flex-grow">
-            {itemData.ingredients}
-          </p>
-        )}
 
-        {/* Цена */}
-        <div className="mt-3 flex justify-between items-center">
+        {/* Цена и кнопка подробнее */}
+        <div className="flex justify-between items-center">
           {itemData.price && (
             <div className="font-semibold text-sayqal-burgundy">
-              {new Intl.NumberFormat('ru-RU').format(itemData.price)} <span className="text-sm">сум</span>
+              {new Intl.NumberFormat('ru-RU').format(itemData.price)} <span className="text-xs">сум</span>
             </div>
           )}
           
-          <div className="text-sayqal-gold text-xs flex items-center font-medium bg-sayqal-cream/30 px-3 py-1 rounded-full">
+          <div className="text-sayqal-gold text-xs flex items-center font-medium bg-sayqal-cream/30 px-2 py-1 rounded-full">
             <span className="mr-1">{{ ru: 'Подробнее', uz: 'Batafsil', en: 'Details' }[language] || 'Batafsil'}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </div>
