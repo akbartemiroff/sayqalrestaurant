@@ -47,8 +47,8 @@ const Home = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  // Загрузка блюд из Supabase
-  const { menu: supabaseMenu, loading, error } = useMenuGrouped();
+  // Загрузка блюд из Supabase (включая переводы категорий из БД)
+  const { menu: supabaseMenu, dbCategoryTranslations, loading, error } = useMenuGrouped();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -350,6 +350,7 @@ const Home = () => {
                     category={category.id} 
                     items={category.items} 
                     onItemClick={handleDishClick}
+                    dbTranslations={dbCategoryTranslations}
                   />
                 )}
               </React.Fragment>

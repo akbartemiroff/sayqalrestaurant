@@ -74,21 +74,25 @@ export const getDishById = async (id) => {
  */
 export const getAllCategories = async () => {
   try {
+    // Запрашиваем все поля, включая возможные переводы name_ru, name_en
     const { data, error } = await supabase
       .from(CATEGORIES_TABLE)
-      .select('id, name, created_at')
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
       throw error;
     }
 
-    // Преобразуем в формат с label
+    // Преобразуем в формат с label и переводами
     const categories = data?.map(cat => ({
       id: cat.id.toString(),
       value: cat.id.toString(),
       label: cat.name || 'Без названия',
-      name: cat.name
+      name: cat.name,
+      // Переводы из Supabase (если есть)
+      name_ru: cat.name_ru || null,
+      name_en: cat.name_en || null
     })) || [];
 
     return { data: categories, error: null };
@@ -100,6 +104,9 @@ export const getAllCategories = async () => {
 
 /**
  * Группировать блюда по категориям
+ * Возвращает объект с:
+ * - grouped: блюда сгруппированные по категориям
+ * - categoryTranslations: переводы категорий из Supabase
  */
 export const getDishesGroupedByCategory = async () => {
   try {
@@ -120,13 +127,26 @@ export const getDishesGroupedByCategory = async () => {
     console.log('📦 Категории из Supabase:', categories);
     console.log('🍽️ Блюда из Supabase:', dishes.length);
 
-    // Создаём маппинг ID категории -> название
+    // Создаём маппинг ID категории -> данные категории (включая переводы)
     const categoryMap = {};
+    const categoryTranslationsFromDb = {};
+    
     categories.forEach(cat => {
-      categoryMap[cat.id] = cat.name || cat.label;
+      const catName = cat.name || cat.label;
+      categoryMap[cat.id] = catName;
+      
+      // Сохраняем переводы из базы данных если они есть
+      if (cat.name_ru || cat.name_en) {
+        categoryTranslationsFromDb[catName] = {
+          uz: catName,
+          ru: cat.name_ru || catName,
+          en: cat.name_en || catName
+        };
+      }
     });
     
     console.log('🗺️ Маппинг категорий:', categoryMap);
+    console.log('🌐 Переводы из БД:', categoryTranslationsFromDb);
 
     // Группировка блюд по категориям
     const grouped = dishes.reduce((acc, dish) => {
@@ -143,10 +163,14 @@ export const getDishesGroupedByCategory = async () => {
 
     console.log('📋 Сгруппированные категории:', Object.keys(grouped));
 
-    return { data: grouped, error: null };
+    return { 
+      data: grouped, 
+      categoryTranslations: categoryTranslationsFromDb,
+      error: null 
+    };
   } catch (error) {
     console.error('Error grouping dishes:', error);
-    return { data: null, error: error.message };
+    return { data: null, categoryTranslations: {}, error: error.message };
   }
 };
 
@@ -179,7 +203,7 @@ export const subscribeToDisheChanges = (callback) => {
 export const getCategoryTranslation = (categoryName, language = 'uz') => {
   if (!categoryName) return '';
   
-  const lowerName = categoryName.toLowerCase();
+  const lowerName = categoryName.toLowerCase().trim();
   
   // Переводы категорий
   const translations = {
@@ -190,23 +214,84 @@ export const getCategoryTranslation = (categoryName, language = 'uz') => {
     lunchboxes: { ru: 'Ланчбокс', uz: 'Lanchboks', en: 'Lunchbox' },
     sets: { ru: 'Сеты', uz: 'Setlar', en: 'Sets' },
     sauces: { ru: 'Соусы', uz: 'Souslar', en: 'Sauces' },
-    breads: { ru: 'Хлеб', uz: 'Non', en: 'Bread' },
-    desserts: { ru: 'Десерты', uz: 'Desertlar', en: 'Desserts' },
-    beverages: { ru: 'Напитки', uz: 'Ichimliklar', en: 'Beverages' }
+    breads: { ru: 'Хлеб', uz: 'Nonlar', en: 'Bread' },
+    desserts: { ru: 'Десерты', uz: 'Shirinliklar', en: 'Desserts' },
+    beverages: { ru: 'Напитки', uz: 'Ichimliklar', en: 'Beverages' },
+    appetizers: { ru: 'Закуски', uz: 'Gazaklar', en: 'Appetizers' },
+    other: { ru: 'Другое', uz: 'Boshqa', en: 'Other' }
   };
   
-  // Ищем соответствие по ключевым словам
+  // Точные соответствия (регистронезависимые) - для известных названий на любом языке
+  const exactMatches = {
+    // Узбекские названия
+    'salat': 'salads',
+    'salatlar': 'salads',
+    'birinchi taomlar': 'soups',
+    'birinchi ovqat': 'soups',
+    'ikkinchi taomlar': 'mainDishes',
+    'ikkinchi ovqat': 'mainDishes',
+    'shashliklar': 'kebabs',
+    'kabob': 'kebabs',
+    'lanchboks': 'lunchboxes',
+    'lanch boks': 'lunchboxes',
+    'setlar': 'sets',
+    'souslar': 'sauces',
+    'nonlar': 'breads',
+    'non': 'breads',
+    'shirinliklar': 'desserts',
+    'desertlar': 'desserts',
+    'ichimliklar': 'beverages',
+    'gazaklar': 'appetizers',
+    'boshqa': 'other',
+    // Русские названия
+    'салаты': 'salads',
+    'первые блюда': 'soups',
+    'вторые блюда': 'mainDishes',
+    'шашлыки': 'kebabs',
+    'ланчбокс': 'lunchboxes',
+    'сеты': 'sets',
+    'соусы': 'sauces',
+    'хлеб': 'breads',
+    'десерты': 'desserts',
+    'напитки': 'beverages',
+    'закуски': 'appetizers',
+    'другое': 'other',
+    // Английские названия
+    'salads': 'salads',
+    'first courses': 'soups',
+    'soups': 'soups',
+    'main dishes': 'mainDishes',
+    'kebabs': 'kebabs',
+    'lunchbox': 'lunchboxes',
+    'sets': 'sets',
+    'sauces': 'sauces',
+    'bread': 'breads',
+    'desserts': 'desserts',
+    'beverages': 'beverages',
+    'drinks': 'beverages',
+    'appetizers': 'appetizers',
+    'other': 'other'
+  };
+  
+  // Сначала проверяем точное соответствие
+  if (exactMatches[lowerName]) {
+    const key = exactMatches[lowerName];
+    return translations[key][language] || translations[key].uz;
+  }
+  
+  // Ищем соответствие по ключевым словам (для частичных совпадений и новых вариаций)
   const categoryKeys = [
     { key: 'salads', patterns: ['salat', 'салат', 'salad'] },
-    { key: 'soups', patterns: ['birinchi', 'первы', 'soup', 'суп', 'first'] },
-    { key: 'mainDishes', patterns: ['ikkinchi', 'втор', 'main', 'second'] },
-    { key: 'kebabs', patterns: ['shashlik', 'шашлык', 'kebab', 'kabob'] },
+    { key: 'soups', patterns: ['birinchi', 'первы', 'soup', 'суп', 'first', 'shorva', 'шурпа', 'шорва'] },
+    { key: 'mainDishes', patterns: ['ikkinchi', 'втор', 'main', 'second', 'asosiy'] },
+    { key: 'kebabs', patterns: ['shashlik', 'шашлык', 'kebab', 'kabob', 'кебаб'] },
     { key: 'lunchboxes', patterns: ['lanch', 'ланч', 'lunch'] },
     { key: 'sets', patterns: ['set', 'сет'] },
     { key: 'sauces', patterns: ['sous', 'соус', 'sauce'] },
-    { key: 'breads', patterns: ['non', 'хлеб', 'bread'] },
-    { key: 'desserts', patterns: ['desert', 'десерт', 'dessert'] },
-    { key: 'beverages', patterns: ['ichimlik', 'напит', 'beverage', 'drink'] }
+    { key: 'breads', patterns: ['non', 'хлеб', 'bread', 'лепёшк', 'лепешк'] },
+    { key: 'desserts', patterns: ['desert', 'десерт', 'dessert', 'shirin', 'ширин', 'сладк', 'sweet'] },
+    { key: 'beverages', patterns: ['ichimlik', 'напит', 'beverage', 'drink', 'чай', 'choy', 'кофе', 'kofe'] },
+    { key: 'appetizers', patterns: ['gazak', 'закуск', 'appetiz', 'snack'] }
   ];
   
   for (const { key, patterns } of categoryKeys) {

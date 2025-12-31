@@ -103,9 +103,11 @@ export function useDishesByCategory(category) {
 
 /**
  * Хук для получения блюд, сгруппированных по категориям
+ * Возвращает также переводы категорий из Supabase
  */
 export function useMenuGrouped() {
   const [menu, setMenu] = useState({});
+  const [dbCategoryTranslations, setDbCategoryTranslations] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -113,13 +115,14 @@ export function useMenuGrouped() {
     try {
       setLoading(true);
       setError(null);
-      const { data, error: fetchError } = await getDishesGroupedByCategory();
+      const { data, categoryTranslations, error: fetchError } = await getDishesGroupedByCategory();
       
       if (fetchError) {
         throw new Error(fetchError);
       }
       
       setMenu(data || {});
+      setDbCategoryTranslations(categoryTranslations || {});
     } catch (err) {
       setError(err.message);
       console.error('Error fetching grouped menu:', err);
@@ -142,7 +145,7 @@ export function useMenuGrouped() {
     };
   }, [fetchMenu]);
 
-  return { menu, loading, error, refetch: fetchMenu };
+  return { menu, dbCategoryTranslations, loading, error, refetch: fetchMenu };
 }
 
 /**
